@@ -35,7 +35,7 @@ const Search: FC<Props> = ({
             <div className='container mx-auto flex gap-4 flex-wrap justify-between items-center'>
                 <div className='w-full md:1/3 lg:w-auto mb-4 md:mb-0'>
                     <label className='block text-sm font-medium mb-2 text-black'>
-                        Room Type
+                        Tipo de habitación
                     </label>
                     <div className='relative'>
                         <select
@@ -43,9 +43,9 @@ const Search: FC<Props> = ({
                             onChange={handleRoomTypeChange}
                             className='w-full px-4 py-2 capitalize rounded leading-tight dark:bg-black focus:outline-none'
                         >
-                            <option value='All'>All</option>
-                            <option value='Basic'>Basic</option>
-                            <option value='Luxury'>Luxury</option>
+                            <option value='All'>Todo</option>
+                            <option value='Basic'>Basico</option>
+                            <option value='Luxury'>Lujo</option>
                             <option value='Suite'>Suite</option>
                         </select>
                     </div>
@@ -53,12 +53,12 @@ const Search: FC<Props> = ({
 
                 <div className='w-full md:1/3 lg:w-auto mb-4 md:mb-0'>
                     <label className='block text-sm font-medium mb-2 text-black'>
-                        Search
+                        Búsqueda
                     </label>
                     <input
                         type='search'
                         id='search'
-                        placeholder='Search...'
+                        placeholder='Buscar...'
                         className='w-full px-4 py-3 rounded leading-tight dark:bg-black focus:outline-none placeholder:text-black dark:placeholder:text-white'
                         value={searchQuery}
                         onChange={handleSearchQueryChange}
@@ -70,7 +70,7 @@ const Search: FC<Props> = ({
                     type='button'
                     onClick={handleFilterClick}
                 >
-                    Search
+                    Buscar
                 </button>
             </div>
         </section>

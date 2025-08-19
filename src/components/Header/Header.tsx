@@ -68,13 +68,13 @@ const Header = () => {
 
             <ul className='flex items-center justify-between w-full md:w-1/3 mt-4'>
                 <li className='hover:-translate-y-2 duration-500 transition-all'>
-                    <Link href='/'>Home</Link>
+                    <Link href='/'>Inicio</Link>
                 </li>
                 <li className='hover:-translate-y-2 duration-500 transition-all'>
-                    <Link href='/rooms'>Rooms</Link>
+                    <Link href='/rooms'>Habitaciones</Link>
                 </li>
                 <li className="hover:-translate-y-2 duration-500 transition-all">
-                    <a href="#footer">Contact</a>
+                    <a href="#footer">Contacto</a>
                 </li>
             </ul>
         </header>

@@ -40,10 +40,10 @@ const NewsLetter = () => {
         className="bg-primary text-white px-4 rounded-xl md:rounded-[30px] flex flex-col justify-center items-center py-6 md:py-24"
       >
         <p className="md:font-semibold text-lg md:text-xl text-center mb-3">
-          Explore More About Our Hotel
+          Descubra más sobre nuestro hotel
         </p>
         <h6 className="md:font-semibold font-medium text-2xl md:text-3xl lg:text-5xl text-center">
-          Sign Up for Our Newsletter
+          Suscríbase a nuestro boletín informativo
         </h6>
 
         <div className="flex-col justify-center w-full md:flex-row flex pt-12">
@@ -51,17 +51,17 @@ const NewsLetter = () => {
             type="email"
             name="user_email"
             required
-            placeholder="Your email"
+            placeholder="Tu correo"
             className="bg-[#026057] h-11 md:h-16 mb-2 md:mb-0 rounded-xl pl-6 md:mr-5 md:w-[452px] text-white placeholder:text-white focus:outline-none"
           />
           <button type="submit" className="btn-tertiary">
-            Subscribe
+            Suscríbete
           </button>
         </div>
 
         {messageSent && (
           <p className="mt-4 text-green-200 text-sm">
-            ✅ Newsletter sent! Check your email.
+            ✅ ¡Boletín enviado! Comprueba tu correo electrónico.
           </p>
         )}
       </form>

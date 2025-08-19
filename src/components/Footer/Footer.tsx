@@ -9,14 +9,14 @@ const Footer = () => {
                     <Link href='/' className='font-black text-tertiary-dark'>
                         Hotel App
                     </Link>
-                    <h4 className='font-semibold text-[40px] py-6 '>Contact</h4>
+                    <h4 className='font-semibold text-[40px] py-6 '>Contacto</h4>
 
                     <div className='flex flex-wrap gap-16 items-center justify-between'>
                         <div className='flex-1'>
-                            <p> Tv. 16a #45F-16</p>
+                            <p> Tv. 16a #45F-16, Bogotá D.C</p>
                             <div className='flex items-center py-4'>
                                 <BsFillSendFill/>
-                                <p className="ml-2">code with Kose</p>
+                                <p className="ml-2">Kosecode</p>
                             </div>
                             <div className='flex items-center '>
                                 <BsTelephoneOutbound/>
@@ -28,21 +28,20 @@ const Footer = () => {
                             </div>
                         </div>
                         <div className="flex-1 md-text-right">
-                            <p className="pb-4">Our story</p>
-                            <p className="pb-4">Get in touch</p>
-                            <p className="pb-4">Our privacy commitment</p>
-                            <p className="pb-4">Terms of services</p>
-                            <p> Customer Asssitance</p>
+                            <p className="pb-4">Nosotros</p>
+                            <p className="pb-4">Ponte en contacto</p>
+                            <p className="pb-4">Nuestro compromiso con la privacidad</p>
+                            <p className="pb-4">Términos del servicio</p>
+
                         </div>
                         <div className='flex-1 md:text-right'>
-                            <p className='pb-4'>Dining Experience</p>
-                            <p className='pb-4'>Wellness</p>
-                            <p className='pb-4'>Fitness</p>
-                            <p className='pb-4'>Sports</p>
-                            <p>Events</p>
+                            <p className='pb-4'>Experiencia gastronómica</p>
+                            <p className='pb-4'>Bienestar</p>
+                            <p className='pb-4'>Acondicionamiento físico</p>
+                            <p className='pb-4'>Deportes</p>
+                            <p>Eventos</p>
                         </div>
                     </div>
-
                 </div>
             <div className='bg-tertiary-light h-10 md:h-[70px] mt-16 w-full bottom-0 left-0'></div>
         </footer>

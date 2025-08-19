@@ -18,11 +18,8 @@ type Props = {
   noOfChildren: number;
   specialNote: string;
   isBooked: boolean;
-  handleBookNowClick: () => void; // compatibilidad
+  handleBookNowClick: () => void; // se usará en lugar de redirigir
 };
-
-const GOOGLE_FORM_URL =
-  "https://docs.google.com/forms/d/e/1FAIpQLSc24b1y4AXHo_Y-eeEiWMC6o6iUz-caJHRIlVOmHM3HAMwGYQ/viewform?usp=header";
 
 // Formateador COP
 const formatCOP = (value: number) =>
@@ -47,6 +44,7 @@ const BookRoomCta: FC<Props> = (props) => {
     setNoOfChildren,
     noOfChildren,
     isBooked,
+    handleBookNowClick,
   } = props;
 
   const [showModal, setShowModal] = useState(false);
@@ -71,10 +69,33 @@ const BookRoomCta: FC<Props> = (props) => {
   const nights = calcNoOfDays();
   const totalCOP = nights > 0 ? nightlyPrice * nights : 0;
 
-  const handleConfirm = () => {
+  // Confirmar sin redirigir
+  const handleConfirm = async () => {
+    // (Opcional) Si quieres enviar a tu API, descomenta:
+    /*
+    const payload = {
+      checkinDate,
+      checkoutDate,
+      adults,
+      children: noOfChildren,
+      nights,
+      nightlyPrice,
+      totalCOP,
+      note: specialNote,
+    };
+
+    await fetch('/api/reservas', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(payload),
+    });
+    */
+
+    // Notifica al padre para que maneje la lógica (estado global, toast, navegación interna, etc.)
+    handleBookNowClick();
+
+    // Cierra el modal
     setShowModal(false);
-    // Abre en nueva pestaña (si prefieres misma pestaña: window.location.href = GOOGLE_FORM_URL)
-    window.open(GOOGLE_FORM_URL, "_blank");
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -83,6 +104,7 @@ const BookRoomCta: FC<Props> = (props) => {
     if (!checkinDate) errs.checkin = "Selecciona la fecha de entrada";
     if (!checkoutDate) errs.checkout = "Selecciona la fecha de salida";
     setErrors(errs);
+
     if (Object.keys(errs).length === 0) setShowModal(true);
   };
 
@@ -222,10 +244,18 @@ const BookRoomCta: FC<Props> = (props) => {
           {/* Card */}
           <div className="relative z-10 w-full max-w-md mx-4 rounded-2xl bg-white text-gray-900 shadow-xl">
             <div className="p-6">
-              <h2 className="text-lg font-semibold">Completar formulario</h2>
+              <h2 className="text-lg font-semibold">Confirmar reserva</h2>
               <p className="mt-2 text-sm text-gray-600">
-                Para finalizar tu reserva, debes llenar el formulario en una nueva pestaña.
+                Revisa los datos y confirma. No se redirigirá a ningún formulario externo.
               </p>
+
+              <ul className="mt-4 text-sm text-gray-700 space-y-1">
+                <li><strong>Entrada:</strong> {checkinDate ? checkinDate.toLocaleDateString() : '-'}</li>
+                <li><strong>Salida:</strong> {checkoutDate ? checkoutDate.toLocaleDateString() : '-'}</li>
+                <li><strong>Adultos / Niños:</strong> {adults} / {noOfChildren}</li>
+                <li><strong>Noches:</strong> {nights}</li>
+                <li><strong>Total:</strong> {formatCOP(totalCOP)}</li>
+              </ul>
 
               <div className="mt-6 flex gap-3">
                 <button
@@ -239,7 +269,8 @@ const BookRoomCta: FC<Props> = (props) => {
                   type="button"
                   onClick={handleConfirm}
                   className="w-1/2 btn-primary rounded-xl px-4 py-2"
-                > Ir al formulario
+                >
+                  Confirmar
                 </button>
               </div>
             </div>
@@ -260,5 +291,3 @@ const BookRoomCta: FC<Props> = (props) => {
 };
 
 export default BookRoomCta;
-
-

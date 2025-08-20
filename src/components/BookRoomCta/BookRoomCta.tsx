@@ -1,8 +1,9 @@
 'use client';
 
-import { Dispatch, FC, SetStateAction, useState, useEffect } from "react";
+import { Dispatch, FC, SetStateAction, useState } from "react";
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { useRouter } from "next/navigation";
 
 type Props = {
   checkinDate: Date | null;
@@ -12,16 +13,15 @@ type Props = {
   setAdults: Dispatch<SetStateAction<number>>;
   setNoOfChildren: Dispatch<SetStateAction<number>>;
   calcMinCheckoutDate: () => Date | null;
-  price: number;          // Precio por noche (COP)
-  discount: number;       // Descuento en %
+  price: number;
+  discount: number;
   adults: number;
   noOfChildren: number;
   specialNote: string;
   isBooked: boolean;
-  handleBookNowClick: () => void; // se usará en lugar de redirigir
+  handleBookNowClick: () => void;
 };
 
-// Formateador COP
 const formatCOP = (value: number) =>
   new Intl.NumberFormat('es-CO', {
     style: 'currency',
@@ -47,56 +47,15 @@ const BookRoomCta: FC<Props> = (props) => {
     handleBookNowClick,
   } = props;
 
-  const [showModal, setShowModal] = useState(false);
   const [errors, setErrors] = useState<{ checkin?: string; checkout?: string }>({});
+  const router = useRouter();
 
-  // Evitar scroll del body cuando el modal está abierto
-  useEffect(() => {
-    if (showModal) document.body.style.overflow = "hidden";
-    else document.body.style.overflow = "";
-    return () => { document.body.style.overflow = ""; };
-  }, [showModal]);
-
-  // Precio por noche con descuento (redondeado a pesos)
   const nightlyPrice = Math.round(price * (1 - (discount || 0) / 100));
+  const nights = checkinDate && checkoutDate
+    ? Math.ceil((checkoutDate.getTime() - checkinDate.getTime()) / (1000 * 60 * 60 * 24))
+    : 0;
 
-  const calcNoOfDays = () => {
-    if (!checkinDate || !checkoutDate) return 0;
-    const timeDiff = checkoutDate.getTime() - checkinDate.getTime();
-    return Math.ceil(timeDiff / (24 * 60 * 60 * 1000));
-  };
-
-  const nights = calcNoOfDays();
   const totalCOP = nights > 0 ? nightlyPrice * nights : 0;
-
-  // Confirmar sin redirigir
-  const handleConfirm = async () => {
-    // (Opcional) Si quieres enviar a tu API, descomenta:
-    /*
-    const payload = {
-      checkinDate,
-      checkoutDate,
-      adults,
-      children: noOfChildren,
-      nights,
-      nightlyPrice,
-      totalCOP,
-      note: specialNote,
-    };
-
-    await fetch('/api/reservas', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(payload),
-    });
-    */
-
-    // Notifica al padre para que maneje la lógica (estado global, toast, navegación interna, etc.)
-    handleBookNowClick();
-
-    // Cierra el modal
-    setShowModal(false);
-  };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -105,7 +64,23 @@ const BookRoomCta: FC<Props> = (props) => {
     if (!checkoutDate) errs.checkout = "Selecciona la fecha de salida";
     setErrors(errs);
 
-    if (Object.keys(errs).length === 0) setShowModal(true);
+    if (Object.keys(errs).length === 0) {
+      // Guardar en localStorage (opcional)
+      localStorage.setItem("reserva", JSON.stringify({
+        checkinDate,
+        checkoutDate,
+        adults,
+        noOfChildren,
+        nights,
+        totalCOP,
+        price,
+        discount,
+        specialNote
+      }));
+
+      // Redirigir a la vista de datos personales
+      window.open('/personal-info', '_blank');
+    }
   };
 
   return (
@@ -123,14 +98,11 @@ const BookRoomCta: FC<Props> = (props) => {
           <span className="font-bold text-xl"> {" "} / noche</span>
         )}
       </h3>
-
       <div className="w-full border-b-2 border-b-secondary my-2" />
       <h4 className="my-8">{specialNote}</h4>
-
       <div className="flex">
         <div className="w-1/2 pr-2">
-          <label htmlFor="check-in-date" className="block text-sm font-medium text-gray-900 dark:text-gray-400">
-            Check In date
+          <label htmlFor="check-in-date">Check In date
           </label>
           <DatePicker
             selected={checkinDate}
@@ -148,17 +120,10 @@ const BookRoomCta: FC<Props> = (props) => {
               errors.checkin ? "border-red-500" : "border-gray-300"
             }`}
           />
-          {errors.checkin && (
-            <p id="checkin-error" className="mt-1 text-xs text-red-600">
-              {errors.checkin}
-            </p>
-          )}
         </div>
 
         <div className="w-1/2 pl-2">
-          <label htmlFor="check-out-date" className="block text-sm font-medium text-gray-900 dark:text-gray-400">
-            Check Out date
-          </label>
+          <label htmlFor="check-out-date">Check Out date</label>
           <DatePicker
             selected={checkoutDate}
             onChange={(date: Date | null) => {
@@ -175,20 +140,12 @@ const BookRoomCta: FC<Props> = (props) => {
             className={`w-full border text-black rounded-lg p-2.5 focus:ring-primary focus:border-primary ${
               errors.checkout ? "border-red-500" : "border-gray-300"
             }`}
-          />
-          {errors.checkout && (
-            <p id="checkout-error" className="mt-1 text-xs text-red-600">
-              {errors.checkout}
-            </p>
-          )}
-        </div>
+          />       </div>
       </div>
 
       <div className="flex mt-4">
         <div className="w-1/2 pr-2">
-          <label htmlFor="adults" className="block text-sm font-medium text-gray-900 dark:text-gray-400">
-            Adults
-          </label>
+          <label htmlFor="adults">Adults</label>
           <input
             type="number"
             id="adults"
@@ -199,10 +156,9 @@ const BookRoomCta: FC<Props> = (props) => {
             className="w-full border text-black border-gray-300 rounded-lg p-2.5 focus:ring-primary focus:border-primary"
           />
         </div>
+
         <div className="w-1/2 pl-2">
-          <label htmlFor="children" className="block text-sm font-medium text-gray-900 dark:text-gray-400">
-            Children
-          </label>
+          <label htmlFor="children">Children</label>
           <input
             type="number"
             id="children"
@@ -228,64 +184,6 @@ const BookRoomCta: FC<Props> = (props) => {
       >
         {isBooked ? 'Booked' : 'Book Now'}
       </button>
-
-      {/* Modal */}
-      {showModal && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center"
-          role="dialog"
-          aria-modal="true"
-        >
-          {/* Backdrop */}
-          <div
-            className="absolute inset-0 bg-black/60"
-            onClick={() => setShowModal(false)}
-          />
-          {/* Card */}
-          <div className="relative z-10 w-full max-w-md mx-4 rounded-2xl bg-white text-gray-900 shadow-xl">
-            <div className="p-6">
-              <h2 className="text-lg font-semibold">Confirmar reserva</h2>
-              <p className="mt-2 text-sm text-gray-600">
-                Revisa los datos y confirma. No se redirigirá a ningún formulario externo.
-              </p>
-
-              <ul className="mt-4 text-sm text-gray-700 space-y-1">
-                <li><strong>Entrada:</strong> {checkinDate ? checkinDate.toLocaleDateString() : '-'}</li>
-                <li><strong>Salida:</strong> {checkoutDate ? checkoutDate.toLocaleDateString() : '-'}</li>
-                <li><strong>Adultos / Niños:</strong> {adults} / {noOfChildren}</li>
-                <li><strong>Noches:</strong> {nights}</li>
-                <li><strong>Total:</strong> {formatCOP(totalCOP)}</li>
-              </ul>
-
-              <div className="mt-6 flex gap-3">
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  className="w-1/2 rounded-xl border border-gray-300 px-4 py-2"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="button"
-                  onClick={handleConfirm}
-                  className="w-1/2 btn-primary rounded-xl px-4 py-2"
-                >
-                  Confirmar
-                </button>
-              </div>
-            </div>
-
-            {/* Cerrar */}
-            <button
-              aria-label="Cerrar"
-              onClick={() => setShowModal(false)}
-              className="absolute top-3 right-3 rounded-full p-1 text-gray-500 hover:bg-gray-100"
-            >
-              ✕
-            </button>
-          </div>
-        </div>
-      )}
     </form>
   );
 };

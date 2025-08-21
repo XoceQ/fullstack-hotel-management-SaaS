@@ -4,7 +4,7 @@ import useSWR from 'swr';
 import { FaSignOutAlt } from 'react-icons/fa';
 import Image from 'next/image';
 import axios from 'axios';
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 
 import { getUserBookings } from '@/libs/apis';
 import { User } from '@/models/user';
@@ -18,14 +18,11 @@ import RatingModal from '@/components/RatingModal/RatingModal';
 import BackDrop from '@/components/BackDrop/BackDrop';
 import toast from 'react-hot-toast';
 
-const UserDetails = (props: { params: { id: string } }) => {
-  const {
-    params: { id: userId },
-  } = props;
+const UserDetails = () => {
+  const { data: session, status } = useSession();
+  const userId = session?.user?.id;
 
-  const [currentNav, setCurrentNav] = useState<
-    'bookings' | 'amount' | 'ratings'
-  >('bookings');
+  const [currentNav, setCurrentNav] = useState<'bookings' | 'amount' | 'ratings'>('bookings');
   const [roomId, setRoomId] = useState<string | null>(null);
   const [isRatingVisible, setIsRatingVisible] = useState(false);
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
@@ -39,9 +36,9 @@ const UserDetails = (props: { params: { id: string } }) => {
       return toast.error('Please provide a rating text and a rating');
     }
 
-    if (!roomId) toast.error('Id not provided');
+    if (!roomId) return toast.error('Id not provided');
 
-    setIsSubmittingReview(true)
+    setIsSubmittingReview(true);
 
     try {
       const { data } = await axios.post('/api/users', {
@@ -63,6 +60,9 @@ const UserDetails = (props: { params: { id: string } }) => {
     }
   };
 
+  if (status === 'loading') return <LoadingSpinner />;
+  if (!userId) return <p className='text-center text-red-600'>Debes iniciar sesión para ver tus reservas.</p>;
+
   const fetchUserBooking = async () => getUserBookings(userId);
   const fetchUserData = async () => {
     const { data } = await axios.get<User>('/api/users');
@@ -73,7 +73,7 @@ const UserDetails = (props: { params: { id: string } }) => {
     data: userBookings,
     error,
     isLoading,
-  } = useSWR('/api/userbooking', fetchUserBooking);
+  } = useSWR(userId ? '/api/userbooking' : null, fetchUserBooking);
 
   const {
     data: userData,
@@ -88,17 +88,15 @@ const UserDetails = (props: { params: { id: string } }) => {
     throw new Error('Cannot fetch data');
 
   if (loadingUserData) return <LoadingSpinner />;
-  if (!userData) throw new Error('Cannot fetch data');
-  if (!userData) throw new Error('Cannot fetch data');
 
   return (
-    <div className='container mx-auto px-2 md:px-4 py10'>
+    <div className='container mx-auto px-2 md:px-4 py-10'>
       <div className='grid md:grid-cols-12 gap-10'>
         <div className='hidden md:block md:col-span-4 lg:col-span-3 shadow-lg h-fit sticky top-10 bg-[#eff0f2] text-black rounded-lg px-6 py-4'>
           <div className='md:w-[143px] w-28 h-28 md:h-[143px] mx-auto mb-5 rounded-full overflow-hidden'>
             <Image
-              src={userData.image}
-              alt={userData.name}
+              src={userData?.image || '/default-user.png'}
+              alt={userData?.name || ''}
               width={143}
               height={143}
               className='img scale-animation rounded-full'
@@ -106,10 +104,10 @@ const UserDetails = (props: { params: { id: string } }) => {
           </div>
           <div className='font-normal py-4 text-left'>
             <h6 className='text-xl font-bold pb-3'>About</h6>
-            <p className='text-sm'>{userData.about ?? ''}</p>
+            <p className='text-sm'>{userData?.about ?? ''}</p>
           </div>
           <div className='font-normal text-left'>
-            <h6 className='text-xl font-bold pb-3'>{userData.name}</h6>
+            <h6 className='text-xl font-bold pb-3'>{userData?.name}</h6>
           </div>
           <div className='flex items-center'>
             <p className='mr-2'>Sign Out</p>
@@ -122,23 +120,23 @@ const UserDetails = (props: { params: { id: string } }) => {
 
         <div className='md:col-span-8 lg:col-span-9'>
           <div className='flex items-center'>
-            <h5 className='text-2xl font-bold mr-3'>Hello, {userData.name}</h5>
+            <h5 className='text-2xl font-bold mr-3'>Hello, {userData?.name}</h5>
           </div>
           <div className='md:hidden w-14 h-14 rounded-l-full overflow-hidden'>
             <Image
               className='img scale-animation rounded-full'
               width={56}
               height={56}
-              src={userData.image}
-              alt='User  Name'
+              src={userData?.image || '/default-user.png'}
+              alt='User Name'
             />
           </div>
           <p className='block w-fit md:hidden text-sm py-2'>
-            {userData.about ?? ''}
+            {userData?.about ?? ''}
           </p>
 
           <p className='text-xs py-2 font-medium'>
-            Joined In {userData._createdAt.split('T')[0]}
+            Joined In {userData?._createdAt?.split('T')[0] ?? ''}
           </p>
           <div className='md:hidden flex items-center my-2'>
             <p className='mr-2'>Sign out</p>
@@ -159,9 +157,9 @@ const UserDetails = (props: { params: { id: string } }) => {
                 className='inline-flex items-center cursor-pointer'
               >
                 <BsJournalBookmarkFill />
-                <a className='inline-flex items-center mx-1 md:mx-3 text-xs md:text-sm font-medium'>
+                <span className='inline-flex items-center mx-1 md:mx-3 text-xs md:text-sm font-medium'>
                   Current Bookings
-                </a>
+                </span>
               </li>
             </ol>
             <ol
@@ -174,29 +172,23 @@ const UserDetails = (props: { params: { id: string } }) => {
                 className='inline-flex items-center cursor-pointer'
               >
                 <GiMoneyStack />
-                <a className='inline-flex items-center mx-1 md:mx-3 text-xs md:text-sm font-medium'>
+                <span className='inline-flex items-center mx-1 md:mx-3 text-xs md:text-sm font-medium'>
                   Amount Spent
-                </a>
+                </span>
               </li>
             </ol>
           </nav>
 
-          {currentNav === 'bookings' ? (
-            userBookings && (
-              <Table
-                bookingDetails={userBookings}
-                setRoomId={setRoomId}
-                toggleRatingModal={toggleRatingModal}
-              />
-            )
-          ) : (
-            <></>
+          {currentNav === 'bookings' && userBookings && (
+            <Table
+              bookingDetails={userBookings}
+              setRoomId={setRoomId}
+              toggleRatingModal={toggleRatingModal}
+            />
           )}
 
-          {currentNav === 'amount' ? (
-            userBookings && <Chart userBookings={userBookings} />
-          ) : (
-            <></>
+          {currentNav === 'amount' && userBookings && (
+            <Chart userBookings={userBookings} />
           )}
         </div>
       </div>

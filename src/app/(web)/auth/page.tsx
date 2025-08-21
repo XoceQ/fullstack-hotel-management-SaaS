@@ -63,9 +63,9 @@ const Auth = () => {
             <div className='p-6 space-y-4 md:space-y-6 sm:p-8 w-80 md:w-[70%] mx-auto'>
                 <div className='flex mb-8 flex-col md:flex-row items-center justify-between'>
                     <h1 className='text-xl font-bold leading-tight tracking-tight md:text-2xl'>
-                        Create an account
+                        Crear una cuenta
                     </h1>
-                    <p>OR</p>
+                    <p>O</p>
                     <span className='inline-flex items-center'>
             <AiFillGithub
                 onClick={loginHandler}
@@ -83,7 +83,7 @@ const Auth = () => {
                     <input
                         type='email'
                         name='email'
-                        placeholder='name@company.com'
+                        placeholder='juanp@gmail.com'
                         required
                         className={inputStyles}
                         value={formData.email}
@@ -92,7 +92,7 @@ const Auth = () => {
                     <input
                         type='text'
                         name='name'
-                        placeholder='John Doe'
+                        placeholder='Juan Pérez'
                         required
                         className={inputStyles}
                         value={formData.name}
@@ -101,7 +101,7 @@ const Auth = () => {
                     <input
                         type='password'
                         name='password'
-                        placeholder='password'
+                        placeholder='contraseña'
                         required
                         minLength={6}
                         className={inputStyles}
@@ -113,12 +113,12 @@ const Auth = () => {
                         type='submit'
                         className='w-full bg-tertiary-dark focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center'
                     >
-                        Sign Up
+                        Registrarse
                     </button>
                 </form>
 
                 <button onClick={loginHandler} className='text-blue-700 underline'>
-                    login
+                    Iniciar sesión
                 </button>
             </div>
         </section>

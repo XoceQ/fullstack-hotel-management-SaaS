@@ -98,17 +98,10 @@ export const updateHotelRoom = async (hotelRoomId: string) => {
   return data;
 };
 
-export async function getUserBookings(userId: string) {
-  const result = await sanityClient.fetch<Booking[]>(
-    queries.getUserBookingsQuery,
-    {
-      userId,
-    },
-    { cache: 'no-cache' }
-  );
-
-  return result;
-}
+export const getUserBookings = async (userId: string) => {
+  const { data } = await axios.get(`/api/userbooking?userId=${userId}`);
+  return data.reservas;
+};
 
 export async function getUserData(userId: string) {
   const result = await sanityClient.fetch(

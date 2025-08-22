@@ -6,20 +6,17 @@ import { useRouter } from "next/navigation";
 export default function PersonalInfoPage() {
   const router = useRouter();
   const [form, setForm] = useState({
-    nombre: '',
-    apellido: '',
-    documento: '',
-    email: '',
-    telefono: '',
+    nombre: "",
+    apellido: "",
+    documento: "",
+    email: "",
+    telefono: "",
   });
-
   const [reserva, setReserva] = useState<any>(null);
 
   useEffect(() => {
     const reservaData = localStorage.getItem("reserva");
-    if (reservaData) {
-      setReserva(JSON.parse(reservaData));
-    }
+    if (reservaData) setReserva(JSON.parse(reservaData));
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -28,56 +25,140 @@ export default function PersonalInfoPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     const datosCompletos = { ...form, ...reserva };
 
     try {
-      const res = await fetch('/api/reserva', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      const res = await fetch("/api/reserva", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(datosCompletos),
       });
 
       if (res.ok) {
         localStorage.removeItem("reserva");
-        router.push('/reserva-confirmada');
+        router.push("/reserva-confirmada");
       } else {
-        alert('Error al guardar los datos');
+        alert("Error al guardar los datos");
       }
     } catch (err) {
       console.error(err);
-      alert('Error al conectar con el servidor');
+      alert("Error al conectar con el servidor");
     }
   };
 
+  const formatCOP = (n: number) =>
+    (n ?? 0).toLocaleString("es-CO", { style: "currency", currency: "COP" });
+
   return (
-    <div className="min-h-screen w-full bg-gray-100 flex items-center justify-center px-4 py-10">
-      <div className="w-full max-w-5xl bg-white shadow-lg rounded-xl p-10 space-y-10">
-        <h1 className="text-4xl font-bold text-center text-blue-800">Formulario de Reserva</h1>
+    <div className="min-h-screen w-full bg-gradient-to-br from-sky-50 via-white to-blue-50 flex items-center justify-center px-4 py-10">
+      <div className="w-full max-w-4xl">
+        {/* CARD */}
+        <div className="relative overflow-hidden rounded-2xl border border-blue-100 bg-white/90 shadow-2xl backdrop-blur">
+          {/* Header decorativo */}
+          <div className="absolute inset-x-0 -top-20 h-48 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 blur-3xl opacity-20 pointer-events-none" />
 
-        {reserva && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-blue-50 p-6 rounded-lg border text-gray-700">
-            <p><strong>Check-in:</strong> {new Date(reserva.checkinDate).toLocaleDateString()}</p>
-            <p><strong>Check-out:</strong> {new Date(reserva.checkoutDate).toLocaleDateString()}</p>
-            <p><strong>Adultos:</strong> {reserva.adults}</p>
-            <p><strong>Niños:</strong> {reserva.noOfChildren}</p>
-            <p><strong>Noches:</strong> {reserva.nights}</p>
-            <p><strong>Total:</strong> ${reserva.totalCOP.toLocaleString('es-CO')}</p>
+          {/* Título */}
+          <div className="px-6 sm:px-10 pt-8 pb-6 text-center">
+            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-blue-800">
+              Formulario de Reserva
+            </h1>
+            <p className="mt-2 text-sm sm:text-base text-gray-600">
+              Verifica tu resumen y completa tus datos para confirmar
+            </p>
           </div>
-        )}
 
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <input name="nombre" type="text" placeholder="Nombre" onChange={handleChange} required className="p-4 border rounded-lg shadow-sm" />
-          <input name="apellido" type="text" placeholder="Apellido" onChange={handleChange} required className="p-4 border rounded-lg shadow-sm" />
-          <input name="documento" type="text" placeholder="Documento" onChange={handleChange} required className="p-4 border rounded-lg shadow-sm" />
-          <input name="email" type="email" placeholder="Correo electrónico" onChange={handleChange} required className="p-4 border rounded-lg shadow-sm" />
-          <input name="telefono" type="tel" placeholder="Teléfono" onChange={handleChange} required className="p-4 border rounded-lg shadow-sm" />
-          <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-lg col-span-1 md:col-span-2 shadow-md text-lg font-semibold">
-            Confirmar Reserva
-          </button>
-        </form>
+          <div className="px-4 sm:px-10 pb-10">
+            {/* Tabla resumen de la reserva */}
+            {reserva ? (
+              <div className="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
+                <table className="w-full text-sm">
+                  <thead className="bg-gradient-to-r from-blue-50 to-indigo-50">
+                    <tr className="text-gray-700">
+                      <th className="p-3 text-left font-semibold border-b">Check-in</th>
+                      <th className="p-3 text-left font-semibold border-b">Check-out</th>
+                      <th className="p-3 text-left font-semibold border-b">Adultos</th>
+                      <th className="p-3 text-left font-semibold border-b">Niños</th>
+                      <th className="p-3 text-left font-semibold border-b">Noches</th>
+                      <th className="p-3 text-left font-semibold border-b">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="odd:bg-white even:bg-slate-50">
+                      <td className="p-3 border-b">
+                        {new Date(reserva.checkinDate).toLocaleDateString()}
+                      </td>
+                      <td className="p-3 border-b">
+                        {new Date(reserva.checkoutDate).toLocaleDateString()}
+                      </td>
+                      <td className="p-3 border-b">{reserva.adults}</td>
+                      <td className="p-3 border-b">{reserva.noOfChildren}</td>
+                      <td className="p-3 border-b">{reserva.nights}</td>
+                      <td className="p-3 border-b">
+                        <span className="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-emerald-700 font-semibold">
+                          {formatCOP(reserva.totalCOP)}
+                        </span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="mb-6 rounded-xl border border-dashed border-gray-300 p-6 text-center text-gray-500">
+                Aún no hay una reserva en progreso
+              </div>
+            )}
+
+            {/* Formulario en “tabla” elegante */}
+            <form onSubmit={handleSubmit} className="mt-8">
+              <div className="overflow-hidden rounded-xl border border-gray-200 shadow-sm">
+                <table className="w-full">
+                  <tbody className="text-sm sm:text-base">
+                    {[
+                      { label: "Nombre", name: "nombre", type: "text" },
+                      { label: "Apellido", name: "apellido", type: "text" },
+                      { label: "Documento", name: "documento", type: "text" },
+                      { label: "Correo electrónico", name: "email", type: "email" },
+                      { label: "Teléfono", name: "telefono", type: "tel" },
+                    ].map((field) => (
+                      <tr key={field.name} className="odd:bg-white even:bg-slate-50">
+                        <td className="w-40 sm:w-56 p-3 sm:p-4 font-medium text-gray-700 align-middle border-b">
+                          <label htmlFor={field.name}>{field.label}</label>
+                        </td>
+                        <td className="p-3 sm:p-4 border-b">
+                          <input
+                            id={field.name}
+                            name={field.name}
+                            type={field.type as any}
+                            onChange={handleChange}
+                            required
+                            className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 outline-none ring-offset-2 transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                            placeholder={field.label}
+                          />
+                        </td>
+                      </tr>
+                    ))}
+
+                    <tr>
+                      <td colSpan={2} className="p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-indigo-50">
+                        <button
+                          type="submit"
+                          className="w-full rounded-lg bg-blue-600 py-3 text-white font-semibold shadow hover:bg-blue-700 active:scale-[.99] transition"
+                        >
+                          Confirmar Reserva
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Aviso legal / ayuda */}
+              <p className="mt-4 text-center text-xs text-gray-500">
+                Al continuar aceptas nuestras políticas de privacidad y términos del servicio.
+              </p>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
   );

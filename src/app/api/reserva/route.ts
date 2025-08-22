@@ -39,7 +39,6 @@ export async function POST(req: NextRequest) {
   try {
     const nuevaReserva = await prisma.reserva.create({
       data: {
-        userId,
         nombre,
         apellido,
         documento,

@@ -3,7 +3,10 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
+
+
 export default function PersonalInfoPage() {
+  
   const router = useRouter();
   const [form, setForm] = useState({
     nombre: "",
@@ -14,9 +17,20 @@ export default function PersonalInfoPage() {
   });
   const [reserva, setReserva] = useState<any>(null);
 
+  // Cargar datos de la reserva existente desde localStorage
   useEffect(() => {
     const reservaData = localStorage.getItem("reserva");
-    if (reservaData) setReserva(JSON.parse(reservaData));
+    if (reservaData) {
+      const parsed = JSON.parse(reservaData);
+      setReserva(parsed);
+      setForm({
+        nombre: parsed.nombre || "",
+        apellido: parsed.apellido || "",
+        documento: parsed.documento || "",
+        email: parsed.email || "",
+        telefono: parsed.telefono || "",
+      });
+    }
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -25,23 +39,22 @@ export default function PersonalInfoPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const datosCompletos = { ...form, ...reserva, createdAt: new Date().toISOString() };
+    if (!reserva) return;
+
+    const datosCompletos = { ...reserva, ...form, createdAt: reserva.createdAt || new Date().toISOString() };
 
     try {
-      const res = await fetch("/api/reserva", {
-        method: "POST",
+      const res = await fetch(`/api/reserva/${reserva.id || ""}`, {
+        method: reserva.id ? "PUT" : "POST", // PUT si ya existe
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(datosCompletos),
       });
 
       if (res.ok) {
-        
-        // 🔥 Guardar la reserva confirmada en localStorage para el Dashboard
+        // Guardar la reserva confirmada en localStorage para el Dashboard
         localStorage.setItem("reservaCompleta", JSON.stringify(datosCompletos));
-
         // Limpiar la reserva temporal
         localStorage.removeItem("reserva");
-
         // Redirigir a confirmación
         router.push("/reserva-confirmada");
       } else {
@@ -59,12 +72,8 @@ export default function PersonalInfoPage() {
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-sky-50 via-white to-blue-50 flex items-center justify-center px-4 py-10">
       <div className="w-full max-w-4xl">
-        {/* CARD */}
         <div className="relative overflow-hidden rounded-2xl border border-blue-100 bg-white/90 shadow-2xl backdrop-blur">
-          {/* Header decorativo */}
           <div className="absolute inset-x-0 -top-20 h-48 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 blur-3xl opacity-20 pointer-events-none" />
-
-          {/* Título */}
           <div className="px-6 sm:px-10 pt-8 pb-6 text-center">
             <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-blue-800">
               Formulario de Reserva
@@ -75,9 +84,8 @@ export default function PersonalInfoPage() {
           </div>
 
           <div className="px-4 sm:px-10 pb-10">
-            {/* Tabla resumen de la reserva */}
             {reserva ? (
-              <div className="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
+              <div className="overflow-x-auto rounded-xl border border-gray-200 shadow-sm mb-6">
                 <table className="w-full text-sm">
                   <thead className="bg-gradient-to-r from-blue-50 to-indigo-50">
                     <tr className="text-gray-700">
@@ -91,12 +99,8 @@ export default function PersonalInfoPage() {
                   </thead>
                   <tbody>
                     <tr className="odd:bg-white even:bg-slate-50">
-                      <td className="p-3 border-b">
-                        {new Date(reserva.checkinDate).toLocaleDateString()}
-                      </td>
-                      <td className="p-3 border-b">
-                        {new Date(reserva.checkoutDate).toLocaleDateString()}
-                      </td>
+                      <td className="p-3 border-b">{new Date(reserva.checkinDate).toLocaleDateString()}</td>
+                      <td className="p-3 border-b">{new Date(reserva.checkoutDate).toLocaleDateString()}</td>
                       <td className="p-3 border-b">{reserva.adults}</td>
                       <td className="p-3 border-b">{reserva.noOfChildren}</td>
                       <td className="p-3 border-b">{reserva.nights}</td>
@@ -115,7 +119,6 @@ export default function PersonalInfoPage() {
               </div>
             )}
 
-            {/* Formulario en “tabla” elegante */}
             <form onSubmit={handleSubmit} className="mt-8">
               <div className="overflow-hidden rounded-xl border border-gray-200 shadow-sm">
                 <table className="w-full">
@@ -135,7 +138,7 @@ export default function PersonalInfoPage() {
                             id={field.name}
                             name={field.name}
                             type={field.type as any}
-                            value={form[field.name as keyof typeof form]}   // <-- 🔥 Aquí!
+                            value={form[field.name as keyof typeof form]}
                             onChange={handleChange}
                             required
                             className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 outline-none ring-offset-2 transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
@@ -144,22 +147,19 @@ export default function PersonalInfoPage() {
                         </td>
                       </tr>
                     ))}
-
                     <tr>
                       <td colSpan={2} className="p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-indigo-50">
                         <button
                           type="submit"
                           className="w-full rounded-lg bg-blue-600 py-3 text-white font-semibold shadow hover:bg-blue-700 active:scale-[.99] transition"
                         >
-                          Confirmar Reserva
+                          Guardar Cambios
                         </button>
                       </td>
                     </tr>
                   </tbody>
                 </table>
               </div>
-
-              {/* Aviso legal / ayuda */}
               <p className="mt-4 text-center text-xs text-gray-500">
                 Al continuar aceptas nuestras políticas de privacidad y términos del servicio.
               </p>

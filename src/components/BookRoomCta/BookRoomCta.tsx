@@ -102,7 +102,8 @@ const BookRoomCta: FC<Props> = (props) => {
       <h4 className="my-8">{specialNote}</h4>
       <div className="flex">
         <div className="w-1/2 pr-2">
-          <label htmlFor="check-in-date">Check In date
+          <label htmlFor="check-in-date" className="text-gray-700 dark:text-gray-200">
+            Check In date
           </label>
           <DatePicker
             selected={checkinDate}
@@ -116,14 +117,24 @@ const BookRoomCta: FC<Props> = (props) => {
             required
             aria-invalid={!!errors.checkin}
             aria-describedby={errors.checkin ? "checkin-error" : undefined}
-            className={`w-full border text-black rounded-lg p-2.5 focus:ring-primary focus:border-primary ${
-              errors.checkin ? "border-red-500" : "border-gray-300"
-            }`}
+            className={`w-full rounded-lg p-2.5 
+      border ${errors.checkin
+                ? "border-red-500 dark:border-red-400"
+                : "border-gray-300 dark:border-gray-600"
+              } 
+      bg-white dark:bg-gray-800 text-black dark:text-white 
+      focus:ring-primary focus:border-primary`}
           />
+          {errors.checkin && (
+            <p id="checkin-error" className="mt-1 text-sm text-red-500 dark:text-red-400">
+              {errors.checkin}
+            </p>
+          )}
         </div>
-
         <div className="w-1/2 pl-2">
-          <label htmlFor="check-out-date">Check Out date</label>
+          <label htmlFor="check-out-date" className="text-gray-700 dark:text-gray-200">
+            Check Out date
+          </label>
           <DatePicker
             selected={checkoutDate}
             onChange={(date: Date | null) => {
@@ -137,10 +148,21 @@ const BookRoomCta: FC<Props> = (props) => {
             required
             aria-invalid={!!errors.checkout}
             aria-describedby={errors.checkout ? "checkout-error" : undefined}
-            className={`w-full border text-black rounded-lg p-2.5 focus:ring-primary focus:border-primary ${
-              errors.checkout ? "border-red-500" : "border-gray-300"
-            }`}
-          />       </div>
+            className={`w-full rounded-lg p-2.5 
+      border ${errors.checkout
+                ? "border-red-500 dark:border-red-400"
+                : "border-gray-300 dark:border-gray-600"
+              } 
+      bg-white dark:bg-gray-800 text-black dark:text-white 
+      focus:ring-primary focus:border-primary`}
+          />
+          {errors.checkout && (
+            <p id="checkout-error" className="mt-1 text-sm text-red-500 dark:text-red-400">
+              {errors.checkout}
+            </p>
+          )}
+        </div>
+
       </div>
 
       <div className="flex mt-4">

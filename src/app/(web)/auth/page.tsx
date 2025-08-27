@@ -60,7 +60,7 @@ const Auth = () => {
 
     return (
         <section className='container mx-auto'>
-            <div className='p-6 space-y-4 md:space-y-6 sm:p-8 w-80 md:w-[70%] mx-auto'>
+            <div className='p-6 space-y-4 md:space-y-6 sm:p-8 w-80 md:w-[40%] mx-auto'>
                 <div className='flex mb-8 flex-col md:flex-row items-center justify-between'>
                     <h1 className='text-xl font-bold leading-tight tracking-tight md:text-2xl'>
                         Crear una cuenta
@@ -78,7 +78,6 @@ const Auth = () => {
             />
           </span>
                 </div>
-
                 <form className='space-y-4 md:space-y-6' onSubmit={handleSubmit}>
                     <input
                         type='email'
@@ -116,8 +115,10 @@ const Auth = () => {
                         Registrarse
                     </button>
                 </form>
-
-                <button onClick={loginHandler} className='text-blue-700 underline'>
+               <button 
+                    onClick={loginHandler}
+                    className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg shadow-md hover:bg-blue-700 hover:shadow-lg transition-all duration-200 ease-in-out"
+                    >
                     Iniciar sesión
                 </button>
             </div>

@@ -23,7 +23,7 @@ export default function ReservaConfirmadaPage() {
           <div className="text-left text-gray-800 mt-6 space-y-2">
             <p><strong>Nombre:</strong> {reserva.nombre} {reserva.apellido}</p>
             <p><strong>Documento:</strong> {reserva.documento}</p>
-            <p><strong>Teléfono:</strong> {reserva.telefono}</p>
+              <p><strong>Teléfono:</strong> {reserva.telefono}</p>
             <p><strong>Check-in:</strong> {new Date(reserva.checkinDate).toLocaleString('es-CO', {
               timeZone: 'America/Bogota',
               dateStyle: 'medium',

@@ -25,7 +25,7 @@ export default function PersonalInfoPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const datosCompletos = { ...form, ...reserva };
+    const datosCompletos = { ...form, ...reserva, createdAt: new Date().toISOString() };
 
     try {
       const res = await fetch("/api/reserva", {
@@ -35,7 +35,14 @@ export default function PersonalInfoPage() {
       });
 
       if (res.ok) {
+        
+        // 🔥 Guardar la reserva confirmada en localStorage para el Dashboard
+        localStorage.setItem("reservaCompleta", JSON.stringify(datosCompletos));
+
+        // Limpiar la reserva temporal
         localStorage.removeItem("reserva");
+
+        // Redirigir a confirmación
         router.push("/reserva-confirmada");
       } else {
         alert("Error al guardar los datos");
@@ -117,7 +124,6 @@ export default function PersonalInfoPage() {
                       { label: "Nombre", name: "nombre", type: "text" },
                       { label: "Apellido", name: "apellido", type: "text" },
                       { label: "Documento", name: "documento", type: "text" },
-                      { label: "Correo electrónico", name: "email", type: "email" },
                       { label: "Teléfono", name: "telefono", type: "tel" },
                     ].map((field) => (
                       <tr key={field.name} className="odd:bg-white even:bg-slate-50">
@@ -129,6 +135,7 @@ export default function PersonalInfoPage() {
                             id={field.name}
                             name={field.name}
                             type={field.type as any}
+                            value={form[field.name as keyof typeof form]}   // <-- 🔥 Aquí!
                             onChange={handleChange}
                             required
                             className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 outline-none ring-offset-2 transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"

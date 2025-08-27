@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 export default function ReservaConfirmadaPage() {
@@ -12,15 +13,16 @@ export default function ReservaConfirmadaPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white px-4">
-      <div className="text-center space-y-6 max-w-xl bg-green-50 p-10 rounded-xl shadow-lg">
-        <h1 className="text-3xl font-bold text-green-600">✅ ¡Reserva confirmada!</h1>
-        <p className="text-gray-700">Gracias por reservar con nosotros. Te esperamos pronto.</p>
+      <div className="text-center space-y-6 max-w-xl bg-yellow-50 p-10 rounded-xl shadow-lg">
+        <h1 className="text-3xl font-bold text-yellow-600">⚠️ ¡Reserva pendiente de pago!</h1>
+        <p className="text-gray-700">
+          Gracias por reservar con nosotros. Tu reserva está confirmada, pero falta realizar el pago para completarla.
+        </p>
 
         {reserva && (
           <div className="text-left text-gray-800 mt-6 space-y-2">
             <p><strong>Nombre:</strong> {reserva.nombre} {reserva.apellido}</p>
             <p><strong>Documento:</strong> {reserva.documento}</p>
-            <p><strong>Email:</strong> {reserva.email}</p>
             <p><strong>Teléfono:</strong> {reserva.telefono}</p>
             <p><strong>Check-in:</strong> {new Date(reserva.checkinDate).toLocaleString('es-CO', {
               timeZone: 'America/Bogota',
@@ -41,6 +43,21 @@ export default function ReservaConfirmadaPage() {
             </p>
           </div>
         )}
+       {/* 🔥 Botones ahora dentro del contenedor amarillo */}
+        <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
+          <a
+            href="/pago"
+            className="px-6 py-3 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition"
+          >
+            Realizar Pago
+          </a>
+         <Link
+            href="/auth"
+            className="px-6 py-3 bg-gray-200 text-gray-800 rounded-lg shadow hover:bg-gray-300 transition"
+          >
+            Ir al Dashboard
+        </Link>
+        </div>
       </div>
     </div>
   );

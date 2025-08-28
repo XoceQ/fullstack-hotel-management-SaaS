@@ -45,12 +45,14 @@ export default function ReservaConfirmadaPage() {
         )}
        {/* 🔥 Botones ahora dentro del contenedor amarillo */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
-          <a
-            href="/pago"
-            className="px-6 py-3 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition"
-          >
-            Realizar Pago
-          </a>
+         <a
+          href="https://wa.me/573153993202?text=Hola,%20quiero%20más%20información%20sobre%20el%20pago"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="px-6 py-3 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition"
+        >
+          Realizar Pago
+        </a>
          <Link
             href="/auth"
             className="px-6 py-3 bg-gray-200 text-gray-800 rounded-lg shadow hover:bg-gray-300 transition"

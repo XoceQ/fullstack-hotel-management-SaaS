@@ -35,37 +35,37 @@ const Dashboard = () => {
     setIsClient(true);
   }, []);
 
-useEffect(() => {
-  if (!isClient) return;
+  useEffect(() => {
+    if (!isClient) return;
 
-  const loadReservas = async () => {
-    try {
-      const res = await fetch("/api/reserva");
-      if (res.ok) {
-        const data: Reserva[] = await res.json();
-        setReservas(data);
-        return;
+    const loadReservas = async () => {
+      try {
+        const res = await fetch("/api/reserva");
+        if (res.ok) {
+          const data: Reserva[] = await res.json();
+          setReservas(data);
+          return;
+        }
+      } catch (error) {
+        console.warn("❌ API no disponible, usando localStorage como fallback");
       }
-    } catch (error) {
-      console.warn("❌ API no disponible, usando localStorage como fallback");
-    }
 
-    // 🔄 Fallback: localStorage
-    try {
-      const allReservas = localStorage.getItem("todasLasReservas");
-      if (allReservas) {
-        setReservas(JSON.parse(allReservas));
+      // 🔄 Fallback: localStorage
+      try {
+        const allReservas = localStorage.getItem("todasLasReservas");
+        if (allReservas) {
+          setReservas(JSON.parse(allReservas));
+        }
+      } catch (error) {
+        console.error("Error al cargar reservas desde localStorage:", error);
+        toast.error("Error al cargar reservas");
       }
-    } catch (error) {
-      console.error("Error al cargar reservas desde localStorage:", error);
-      toast.error("Error al cargar reservas");
-    }
-  };
+    };
 
-  loadReservas();
-}, [isClient]);
+    loadReservas();
+  }, [isClient]);
 
-// 🔄 Detecta cambios desde la página de edición
+  // 🔄 Detecta cambios desde la página de edición
   useEffect(() => {
     const updatedReserva = localStorage.getItem("reservaCompleta");
     if (updatedReserva) {
@@ -95,23 +95,23 @@ useEffect(() => {
   };
 
   const handleDeleteReserva = async (id: string) => {
-  if (window.confirm("¿Estás seguro de que quieres eliminar esta reserva?")) {
-    try {
-      const res = await fetch(`/api/reserva/${id}`, {
-        method: "DELETE",
-      });
+    if (window.confirm("¿Estás seguro de que quieres eliminar esta reserva?")) {
+      try {
+        const res = await fetch(`/api/reserva/${id}`, {
+          method: "DELETE",
+        });
 
-      if (!res.ok) throw new Error("Error en API");
+        if (!res.ok) throw new Error("Error en API");
 
-      setReservas(reservas.filter((r) => r.id !== id));
-      toast.success("Reserva eliminada exitosamente ✅");
-    } catch (error) {
-      toast.error("Error al eliminar la reserva ❌");
+        setReservas(reservas.filter((r) => r.id !== id));
+        toast.success("Reserva eliminada exitosamente ✅");
+      } catch (error) {
+        toast.error("Error al eliminar la reserva ❌");
+      }
     }
-  }
-};
+  };
 
-const handleEditReserva = (reserva: Reserva) => {
+  const handleEditReserva = (reserva: Reserva) => {
     localStorage.setItem("reserva", JSON.stringify(reserva));
     window.location.href = "/personal-info"; // Redirige al formulario para editar
   };
@@ -126,7 +126,7 @@ const handleEditReserva = (reserva: Reserva) => {
 
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-10">
-       {/* MODAL */}
+      {/* MODAL */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 max-w-sm w-full shadow-lg text-center">
@@ -159,9 +159,29 @@ const handleEditReserva = (reserva: Reserva) => {
 
           {/* Estadísticas rápidas */}
           <div className="space-y-3 text-left">
-            <div className="bg-blue-50 p-3 rounded-lg">
-              <p className="text-sm text-gray-600">Total Reservas (pago pendiente)</p>
-              <p className="text-xl font-bold text-blue-600">{reservas.length}</p>
+            <div className="bg-blue-50 p-3 rounded-lg flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Total Reservas (pago pendiente)</p>
+                <p className="text-xl font-bold text-blue-600">{reservas.length}</p>
+              </div>
+
+              {/* Mini botón WhatsApp */}
+              <a
+                href="https://wa.me/573153993202?text=Hola%20quisiera%20más%20información%20sobre%20mi%20reserva"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-green-500 hover:bg-green-600 text-white p-2 rounded-full shadow-md transition-transform transform hover:scale-110"
+                title="Chatea con nosotros"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 32 32"
+                  fill="currentColor"
+                  className="w-4 h-4"
+                >
+                  <path d="M16 .063C7.163.063 0 7.226 0 16.063c0 2.831.741 5.59 2.154 8.02L.188 31.938l8.113-1.93A15.85 15.85 0 0016 32c8.837 0 16-7.163 16-15.938C32 7.226 24.837.063 16 .063zm0 29.062c-2.492 0-4.934-.648-7.077-1.878l-.507-.297-4.813 1.146 1.021-4.692-.305-.482A12.938 12.938 0 013.063 16c0-7.168 5.82-12.938 12.937-12.938 7.117 0 12.938 5.77 12.938 12.938 0 7.118-5.82 12.938-12.938 12.938zm7.177-9.688c-.395-.198-2.337-1.154-2.7-1.285-.362-.132-.627-.198-.892.198-.263.395-1.024 1.285-1.255 1.55-.23.263-.461.296-.856.099-.395-.198-1.668-.615-3.176-1.96-1.173-1.045-1.965-2.336-2.197-2.731-.23-.395-.025-.608.173-.805.178-.176.395-.461.593-.691.198-.23.263-.395.395-.658.132-.263.066-.494-.033-.691-.099-.198-.892-2.154-1.223-2.95-.322-.773-.65-.668-.892-.681-.23-.012-.494-.015-.759-.015-.263 0-.691.099-1.053.494-.362.395-1.386 1.354-1.386 3.302s1.42 3.829 1.618 4.094c.198.263 2.787 4.257 6.756 5.965.944.407 1.68.651 2.253.832.947.301 1.809.258 2.49.157.76-.113 2.337-.955 2.67-1.877.329-.922.329-1.712.23-1.877-.099-.165-.362-.263-.757-.461z" />
+                </svg>
+              </a>
             </div>
             <div className="bg-purple-50 p-3 rounded-lg">
               <p className="text-sm text-gray-600">Total Ingresos</p>
@@ -243,8 +263,8 @@ const handleEditReserva = (reserva: Reserva) => {
             </div>
           )}
         </main>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 };
 

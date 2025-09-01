@@ -18,7 +18,6 @@ export default function ReservaConfirmadaPage() {
         <p className="text-gray-700">
           Gracias por reservar con nosotros. Tu reserva está confirmada, pero falta realizar el pago para completarla.
         </p>
-
         {reserva && (
           <div className="text-left text-gray-800 mt-6 space-y-2">
             <p><strong>Nombre:</strong> {reserva.nombre} {reserva.apellido}</p>
@@ -43,7 +42,7 @@ export default function ReservaConfirmadaPage() {
             </p>
           </div>
         )}
-       {/* 🔥 Botones ahora dentro del contenedor amarillo */}
+       {/*  Botones ahora dentro del contenedor amarillo */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
          <a
           href="https://wa.me/573153993202?text=Hola,%20quiero%20más%20información%20sobre%20el%20pago"

@@ -20,6 +20,8 @@
     "date-fns-tz": "^3.2.0",
     "emailjs-com": "^3.2.0",
     "hotel-management": "file:",
+    "mariadb": "^3.4.5",
+    "mysql2": "^3.14.3",
     "next": "14.2.13",
     "next-auth": "^4.24.11",
     "next-auth-sanity": "^1.5.3",

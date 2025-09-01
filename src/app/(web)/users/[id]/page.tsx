@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { FaSignOutAlt, FaEdit, FaTrash, FaEye, FaPlus } from 'react-icons/fa';
+import { FaSignOutAlt, FaEdit, FaTrash, FaEye, FaPlus, FaFileExcel, FaFilePdf } from 'react-icons/fa';
 import Image from 'next/image';
 import { signOut, useSession } from 'next-auth/react';
 import LoadingSpinner from '../../loading';
@@ -34,13 +34,17 @@ const Dashboard = () => {
   useEffect(() => {
     setIsClient(true);
   }, []);
-
   useEffect(() => {
-    if (!isClient) return;
+    if (!isClient || !session?.user?.email) return;
 
     const loadReservas = async () => {
       try {
-        const res = await fetch("/api/reserva");
+        const endpoint =
+          session.user.email === "josefernandorevelo@gmail.com"
+            ? "/api/reserva/admin/all" // endpoint para admin
+            : "/api/reserva"; // endpoint normal
+
+        const res = await fetch(endpoint);
         if (res.ok) {
           const data: Reserva[] = await res.json();
           setReservas(data);
@@ -63,7 +67,8 @@ const Dashboard = () => {
     };
 
     loadReservas();
-  }, [isClient]);
+  }, [isClient, session]);
+
 
   // 🔄 Detecta cambios desde la página de edición
   useEffect(() => {
@@ -94,20 +99,207 @@ const Dashboard = () => {
     });
   };
 
-  const handleDeleteReserva = async (id: string) => {
-    if (window.confirm("¿Estás seguro de que quieres eliminar esta reserva?")) {
-      try {
-        const res = await fetch(`/api/reserva/${id}`, {
-          method: "DELETE",
-        });
+  const formatDateSimple = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('es-CO');
+  };
 
-        if (!res.ok) throw new Error("Error en API");
+  // 📄 Función para exportar a PDF
+  const exportToPDF = () => {
+    if (reservas.length === 0) {
+      toast.error("No hay reservas para exportar");
+      return;
+    }
 
-        setReservas(reservas.filter((r) => r.id !== id));
-        toast.success("Reserva eliminada exitosamente ✅");
-      } catch (error) {
-        toast.error("Error al eliminar la reserva ❌");
+    // Crear contenido HTML para el PDF
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <title>Reporte de Reservas</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 20px; }
+          .header { text-align: center; margin-bottom: 30px; }
+          .user-info { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+          table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+          th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+          th { background-color: #f8f9fa; font-weight: bold; }
+          .total { font-weight: bold; color: #16a085; }
+          .footer { margin-top: 30px; text-align: center; color: #666; font-size: 12px; }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>📋 Reporte de Reservas</h1>
+          <p>Generado el: ${new Date().toLocaleDateString('es-CO', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })}</p>
+        </div>
+        
+        <div class="user-info">
+          <h3>👤 Información del Usuario</h3>
+          <p><strong>Nombre:</strong> ${session?.user?.name || 'N/A'}</p>
+          <p><strong>Email:</strong> ${session?.user?.email || 'N/A'}</p>
+          <p><strong>Total de Reservas:</strong> ${reservas.length}</p>
+          <p><strong>Total de Ingresos:</strong> ${formatCOP(reservas.reduce((sum, r) => sum + r.totalCOP, 0))}</p>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre Completo</th>
+              <th>Documento</th>
+              <th>Email</th>
+              <th>Teléfono</th>
+              <th>Check-in</th>
+              <th>Check-out</th>
+              <th>Adultos</th>
+              <th>Niños</th>
+              <th>Noches</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${reservas.map(reserva => `
+              <tr>
+                <td>${reserva.nombre} ${reserva.apellido}</td>
+                <td>${reserva.documento}</td>
+                <td>${reserva.email}</td>
+                <td>${reserva.telefono}</td>
+                <td>${formatDateSimple(reserva.checkinDate)}</td>
+                <td>${formatDateSimple(reserva.checkoutDate)}</td>
+                <td>${reserva.adults}</td>
+                <td>${reserva.noOfChildren}</td>
+                <td>${reserva.nights}</td>
+                <td class="total">${formatCOP(reserva.totalCOP)}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+        
+        <div class="footer">
+          <p>Este reporte contiene información confidencial. Manténgalo seguro.</p>
+        </div>
+      </body>
+      </html>
+    `;
+
+    // Crear blob y descargar
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `reservas_${session?.user?.name?.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    toast.success("📄 Archivo PDF (HTML) generado exitosamente");
+  };
+
+  // 📊 Función para exportar a Excel (CSV)
+  const exportToExcel = () => {
+    if (reservas.length === 0) {
+      toast.error("No hay reservas para exportar");
+      return;
+    }
+
+    // Crear encabezados CSV
+    const headers = [
+      'Nombre',
+      'Apellido',
+      'Documento',
+      'Email',
+      'Teléfono',
+      'Check-in',
+      'Check-out',
+      'Adultos',
+      'Niños',
+      'Noches',
+      'Total (COP)',
+      'Fecha de Creación'
+    ];
+
+    // Convertir datos a CSV
+    const csvContent = [
+      headers.join(','),
+      ...reservas.map(reserva => [
+        `"${reserva.nombre}"`,
+        `"${reserva.apellido}"`,
+        `"${reserva.documento}"`,
+        `"${reserva.email}"`,
+        `"${reserva.telefono}"`,
+        `"${formatDateSimple(reserva.checkinDate)}"`,
+        `"${formatDateSimple(reserva.checkoutDate)}"`,
+        reserva.adults,
+        reserva.noOfChildren,
+        reserva.nights,
+        reserva.totalCOP,
+        `"${reserva.createdAt ? formatDateSimple(reserva.createdAt) : 'N/A'}"`
+      ].join(','))
+    ].join('\n');
+
+    // Agregar BOM para caracteres especiales
+    const BOM = '\uFEFF';
+    const blob = new Blob([BOM + csvContent], {
+      type: 'text/csv;charset=utf-8;'
+    });
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `reservas_${session?.user?.name?.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    toast.success("📊 Archivo Excel (CSV) generado exitosamente");
+  };
+
+  /*   const handleDeleteReserva = async (id: string) => {
+      if (window.confirm("¿Estás seguro de que quieres eliminar esta reserva?")) {
+        try {
+          const res = await fetch(`/api/reserva/${id}`, {
+            method: "DELETE",
+          });
+  
+          if (!res.ok) throw new Error("Error en API");
+  
+          setReservas(reservas.filter((r) => r.id !== id));
+          toast.success("Reserva eliminada exitosamente ✅");
+        } catch (error) {
+          toast.error("Error al eliminar la reserva ❌");
+        }
       }
+    }; */
+
+  const handleDeleteReserva = async (id: string) => {
+    if (!session?.user?.email) return;
+
+    if (session.user.email !== 'josefernandorevelo@gmail.com') {
+      toast.error('No tienes permisos para eliminar reservas');
+      return;
+    }
+
+    if (!window.confirm('¿Estás seguro de que quieres eliminar esta reserva?')) return;
+
+    try {
+      const res = await fetch(`/api/reserva/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (!res.ok) throw new Error('Error en API');
+
+      setReservas((prev) => prev.filter((r) => r.id !== id));
+      toast.success('Reserva eliminada exitosamente ✅');
+    } catch (error) {
+      toast.error('Error al eliminar la reserva ❌');
     }
   };
 
@@ -189,6 +381,38 @@ const Dashboard = () => {
             </div>
           </div>
 
+          {/* 📊 Botones de Exportación */}
+          <div className="space-y-3">
+            <h3 className="text-sm font-semibold text-gray-700 text-left">📊 Exportar Datos</h3>
+
+            <button
+              onClick={exportToPDF}
+              disabled={reservas.length === 0}
+              className={`flex items-center justify-center gap-2 w-full py-3 px-4 rounded-lg font-semibold shadow transition ${reservas.length === 0
+                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                : 'bg-red-600 text-white hover:bg-red-700'
+                }`}
+              title="Exportar a PDF"
+            >
+              <FaFilePdf className="text-lg" />
+              Exportar PDF
+            </button>
+
+            <button
+              onClick={exportToExcel}
+              disabled={reservas.length === 0}
+              className={`flex items-center justify-center gap-2 w-full py-3 px-4 rounded-lg font-semibold shadow transition ${reservas.length === 0
+                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                : 'bg-green-600 text-white hover:bg-green-700'
+                }`}
+              title="Exportar a Excel"
+            >
+              <FaFileExcel className="text-lg" />
+              Exportar Excel
+            </button>
+          </div>
+
+
           <button
             onClick={() => signOut({ callbackUrl: '/' })}
             className="flex items-center justify-center gap-2 w-full bg-red-600 text-white py-3 px-6 rounded-lg font-semibold shadow hover:bg-red-700 transition"
@@ -203,12 +427,31 @@ const Dashboard = () => {
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold text-gray-800">Mi Dashboard</h1>
           </div>
-
           {reservas.length > 0 ? (
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-700">
-                📋 Todas las Reservas ({reservas.length})
-              </h3>
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-semibold text-gray-700">
+                  📋 Todas las Reservas ({reservas.length})
+                </h3>
+
+                {/* Botones de exportación en versión móvil/tablet */}
+                <div className="flex gap-2 md:hidden">
+                  <button
+                    onClick={exportToPDF}
+                    className="p-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+                    title="Exportar PDF"
+                  >
+                    <FaFilePdf />
+                  </button>
+                  <button
+                    onClick={exportToExcel}
+                    className="p-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                    title="Exportar Excel"
+                  >
+                    <FaFileExcel />
+                  </button>
+                </div>
+              </div>
 
               {reservas.map((reserva) => (
                 <div key={reserva.id} className="bg-white shadow-lg rounded-xl p-6">
@@ -222,7 +465,6 @@ const Dashboard = () => {
                     </div>
 
                     <div className="flex items-center gap-2">
-                      {/* Editar → formulario */}
                       <button
                         onClick={() => handleEditReserva(reserva)}
                         className="p-2 text-green-600 hover:bg-green-100 rounded"
@@ -230,13 +472,23 @@ const Dashboard = () => {
                       >
                         <FaEdit />
                       </button>
-                      <button
+                      {/* <button
                         onClick={() => handleDeleteReserva(reserva.id!)}
                         className="p-2 text-red-600 hover:bg-red-100 rounded"
                         title="Eliminar"
                       >
                         <FaTrash />
-                      </button>
+                      </button> */}
+                      {session.user.email === 'josefernandorevelo@gmail.com' && (
+                        <button
+                          onClick={() => handleDeleteReserva(reserva.id!)}
+                          className="p-2 text-red-600 hover:bg-red-100 rounded transition"
+                          title="Eliminar reserva"
+                        >
+                          <FaTrash />
+                        </button>
+                      )}
+
                     </div>
                   </div>
 
@@ -263,8 +515,8 @@ const Dashboard = () => {
             </div>
           )}
         </main>
-      </div >
-    </div >
+      </div>
+    </div>
   );
 };
 

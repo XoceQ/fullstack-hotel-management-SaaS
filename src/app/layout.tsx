@@ -1,3 +1,7 @@
+'use client';
+
+
+import { SessionProvider } from 'next-auth/react';
 import './globals.css';
 
 export default function RootLayout({ 
@@ -12,7 +16,9 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
       <body className="min-h-screen h-full" suppressHydrationWarning>
-        {children}
+         <SessionProvider>
+          {children}
+        </SessionProvider>
       </body>
     </html>
   );

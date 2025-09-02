@@ -35,7 +35,6 @@ const FeaturedRoom: FC<Props> = props=> {
                     ))}
                 </div>
             </div>
-
             <div className='md:py-10 md:w-1/2 text-left'>
                 <h3 className='font-heading mb-12'>Habitación destacada</h3>
 
@@ -56,7 +55,6 @@ const FeaturedRoom: FC<Props> = props=> {
                             </p>
                         </div>
                     </div>
-
                     <Link
                         href={`/rooms/${featuredRoom.slug.current}`}
                         className='border h-fit text-center border-tertiary-dark text-tertiary-dark px-3 py-2 lg:py-5 lg:px-7 rounded-2xl font-bold lg:text-xl'

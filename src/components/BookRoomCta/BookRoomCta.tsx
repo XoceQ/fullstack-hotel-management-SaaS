@@ -103,7 +103,7 @@ const BookRoomCta: FC<Props> = (props) => {
       <div className="flex">
         <div className="w-1/2 pr-2">
           <label htmlFor="check-in-date" className="text-gray-700 dark:text-gray-200">
-            Check In date
+           Fecha Check In 
           </label>
           <DatePicker
             selected={checkinDate}
@@ -133,7 +133,7 @@ const BookRoomCta: FC<Props> = (props) => {
         </div>
         <div className="w-1/2 pl-2">
           <label htmlFor="check-out-date" className="text-gray-700 dark:text-gray-200">
-            Check Out date
+          Fecha  Check Out 
           </label>
           <DatePicker
             selected={checkoutDate}
@@ -162,12 +162,10 @@ const BookRoomCta: FC<Props> = (props) => {
             </p>
           )}
         </div>
-
       </div>
-
       <div className="flex mt-4">
         <div className="w-1/2 pr-2">
-          <label htmlFor="adults">Adults</label>
+          <label htmlFor="adults">Adultos</label>
           <input
             type="number"
             id="adults"
@@ -178,9 +176,8 @@ const BookRoomCta: FC<Props> = (props) => {
             className="w-full border text-black border-gray-300 rounded-lg p-2.5 focus:ring-primary focus:border-primary"
           />
         </div>
-
         <div className="w-1/2 pl-2">
-          <label htmlFor="children">Children</label>
+          <label htmlFor="children">Niños</label>
           <input
             type="number"
             id="children"
@@ -192,19 +189,17 @@ const BookRoomCta: FC<Props> = (props) => {
           />
         </div>
       </div>
-
       {nights > 0 && (
         <p className="mt-3">
           Total por {nights} noche(s): <strong>{formatCOP(totalCOP)}</strong>
         </p>
       )}
-
       <button
         type="submit"
         disabled={isBooked}
         className="btn-primary w-full mt-6 disabled:bg-gray-500 disabled:cursor-not-allowed"
       >
-        {isBooked ? 'Booked' : 'Book Now'}
+        {isBooked ? 'Booked' : 'Reservar'}
       </button>
     </form>
   );

@@ -16,7 +16,6 @@ const ClientComponent: FC<Props> = props => {
         <section className='flex px-4 items-center gap-12 container mx-auto'>
             <div className='py-10 h-full'>
                 {heading1}
-
                 <div className='flex justify-between mt-12'>
                     <div className='flex gap-3 flex-col items-center justify-center'>
                         <p className='text-xs lg:text-xl text-center'>Habitación Basica</p>
@@ -32,7 +31,6 @@ const ClientComponent: FC<Props> = props => {
                     </div>
                 </div>
             </div>
-
             {section2}
         </section>
     );

@@ -7,6 +7,8 @@ import { signOut, useSession } from 'next-auth/react';
 import LoadingSpinner from '../../loading';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
+import { FaUserShield } from "react-icons/fa";
+
 
 type Reserva = {
   id?: string;
@@ -346,6 +348,14 @@ const Dashboard = () => {
               className="rounded-full object-cover"
             />
           </div>
+          {/* Letrero de Admin - solo visible para el admin */}
+          {session.user.email === 'josefernandorevelo@gmail.com' && (
+            <div className="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
+              ADMIN
+            </div>
+          )}
+
+          
           <h2 className="text-xl font-bold text-gray-800">{session.user.name}</h2>
           <p className="text-sm text-gray-500">{session.user.email}</p>
 
@@ -452,7 +462,6 @@ const Dashboard = () => {
                   </button>
                 </div>
               </div>
-
               {reservas.map((reserva) => (
                 <div key={reserva.id} className="bg-white shadow-lg rounded-xl p-6">
                   <div className="flex justify-between items-start mb-4">
@@ -472,13 +481,7 @@ const Dashboard = () => {
                       >
                         <FaEdit />
                       </button>
-                      {/* <button
-                        onClick={() => handleDeleteReserva(reserva.id!)}
-                        className="p-2 text-red-600 hover:bg-red-100 rounded"
-                        title="Eliminar"
-                      >
-                        <FaTrash />
-                      </button> */}
+
                       {session.user.email === 'josefernandorevelo@gmail.com' && (
                         <button
                           onClick={() => handleDeleteReserva(reserva.id!)}
@@ -491,7 +494,6 @@ const Dashboard = () => {
 
                     </div>
                   </div>
-
                   <div className="grid sm:grid-cols-3 gap-4 text-sm text-gray-600">
                     <p><strong>Teléfono:</strong> {reserva.telefono}</p>
                     <p><strong>Check-in:</strong> {formatDate(reserva.checkinDate)}</p>

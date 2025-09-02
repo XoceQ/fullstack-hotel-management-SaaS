@@ -7,7 +7,8 @@ import { signOut, useSession } from 'next-auth/react';
 import LoadingSpinner from '../../loading';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
-import { FaUserShield } from "react-icons/fa";
+import { useContext } from "react";
+import ThemeContext from "@/context/themeContext";
 
 
 type Reserva = {
@@ -31,6 +32,8 @@ const Dashboard = () => {
   const [reservas, setReservas] = useState<Reserva[]>([]);
   const [isClient, setIsClient] = useState(false);
   const [showModal, setShowModal] = useState(false); // <-- Modal flag
+  const { darkTheme } = useContext(ThemeContext);
+
 
 
   useEffect(() => {
@@ -319,7 +322,13 @@ const Dashboard = () => {
   const totalIngresos = reservas.reduce((sum, r) => sum + r.totalCOP, 0);
 
   return (
-    <div className="min-h-screen bg-gray-50 px-4 py-10">
+    <div
+      className={`min-h-screen px-4 py-10 transition-colors duration-300 ${darkTheme
+        ? "bg-black text-white"
+        : "bg-gray-50 text-gray-900 font-black text-tertiary-dark"
+        }`}
+    >
+
       {/* MODAL */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
@@ -355,7 +364,6 @@ const Dashboard = () => {
             </div>
           )}
 
-          
           <h2 className="text-xl font-bold text-gray-800">{session.user.name}</h2>
           <p className="text-sm text-gray-500">{session.user.email}</p>
 
@@ -363,7 +371,7 @@ const Dashboard = () => {
           <div className="space-y-3 text-left">
             <div className="bg-blue-50 p-3 rounded-lg flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Total Reservas (pago pendiente)</p>
+                <p className="text-sm font-semibold text-gray-700 text-left">Total Reservas (pago pendiente)</p>
                 <p className="text-xl font-bold text-blue-600">{reservas.length}</p>
               </div>
 
@@ -386,7 +394,7 @@ const Dashboard = () => {
               </a>
             </div>
             <div className="bg-purple-50 p-3 rounded-lg">
-              <p className="text-sm text-gray-600">Total Ingresos</p>
+              <p className="text-sm font-semibold text-gray-700 text-left">Total Ingresos</p>
               <p className="text-lg font-bold text-purple-600">{formatCOP(totalIngresos)}</p>
             </div>
           </div>
@@ -435,12 +443,21 @@ const Dashboard = () => {
         {/* Main content */}
         <main className="md:col-span-8 lg:col-span-9 space-y-6">
           <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-gray-800">Mi Dashboard</h1>
+            <h1
+              className={`text-2xl font-bold ${darkTheme ? "text-white" : "text-gray-800"
+                }`}
+            >
+              Mi Dashboard
+            </h1>
+
           </div>
           {reservas.length > 0 ? (
             <div className="space-y-4">
               <div className="flex justify-between items-center">
-                <h3 className="text-lg font-semibold text-gray-700">
+                <h3
+                  className={`text-lg font-semibold ${darkTheme ? "text-white" : "text-gray-700"
+                    }`}
+                >
                   📋 Todas las Reservas ({reservas.length})
                 </h3>
 
@@ -469,8 +486,8 @@ const Dashboard = () => {
                       <h4 className="text-lg font-semibold text-gray-800">
                         Nombre: {reserva.nombre} {reserva.apellido}
                       </h4>
-                      <p className="text-gray-600"><strong>Correo:</strong> {reserva.email}</p>
-                      <p className="text-sm text-gray-600"><strong>CC:</strong> {reserva.documento}</p>
+                      <p className="text-sm font-semibold text-gray-700 text-left"><strong>Correo:</strong> {reserva.email}</p>
+                      <p className="text-sm font-semibold text-gray-800"><strong>CC:</strong> {reserva.documento}</p>
                     </div>
 
                     <div className="flex items-center gap-2">
@@ -494,7 +511,7 @@ const Dashboard = () => {
 
                     </div>
                   </div>
-                  <div className="grid sm:grid-cols-3 gap-4 text-sm text-gray-600">
+                  <div className="grid sm:grid-cols-3 gap-4 text-sm font-semibold text-gray-800">
                     <p><strong>Teléfono:</strong> {reserva.telefono}</p>
                     <p><strong>Check-in:</strong> {formatDate(reserva.checkinDate)}</p>
                     <p><strong>Check-out:</strong> {formatDate(reserva.checkoutDate)}</p>

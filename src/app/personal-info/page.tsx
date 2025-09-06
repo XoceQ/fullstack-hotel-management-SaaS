@@ -12,6 +12,8 @@ export default function PersonalInfoPage() {
     documento: "",
     email: "",
     telefono: "",
+    roomType: "", // ✅ nuevo campo
+
   });
   const [reserva, setReserva] = useState<any>(null);
 
@@ -27,11 +29,12 @@ export default function PersonalInfoPage() {
         documento: parsed.documento || "",
         email: parsed.email || "",
         telefono: parsed.telefono || "",
+        roomType: parsed.roomType || "", // ✅ carga si ya existe
       });
     }
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
@@ -39,7 +42,7 @@ export default function PersonalInfoPage() {
     e.preventDefault();
     if (!reserva) return;
 
-    const datosCompletos = { ...reserva, ...form, roomType: reserva.roomType,  createdAt: reserva.createdAt || new Date().toISOString() };
+    const datosCompletos = { ...reserva, ...form, roomType: form.roomType || reserva.roomType, createdAt: reserva.createdAt || new Date().toISOString() };
 
     try {
       const res = await fetch(`/api/reserva/${reserva.id || ""}`, {
@@ -65,7 +68,6 @@ export default function PersonalInfoPage() {
   };
   const formatCOP = (n: number) =>
     (n ?? 0).toLocaleString("es-CO", { style: "currency", currency: "COP" });
-
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-sky-50 via-white to-blue-50 flex items-center justify-center px-4 py-10">
       <div className="w-full max-w-4xl">
@@ -118,7 +120,6 @@ export default function PersonalInfoPage() {
                 Aún no hay una reserva en progreso
               </div>
             )}
-
             <form onSubmit={handleSubmit} className="mt-8">
               <div className="overflow-hidden rounded-xl border border-gray-200 shadow-sm">
                 <table className="w-full">
@@ -128,6 +129,8 @@ export default function PersonalInfoPage() {
                       { label: "Apellido", name: "apellido", type: "text" },
                       { label: "Documento", name: "documento", type: "text" },
                       { label: "Teléfono", name: "telefono", type: "tel" },
+/*                       { label: "Tipo de Habitación", name: "roomType", type: "text" }, // ✅ nuevo campo
+ */
                     ].map((field) => (
                       <tr key={field.name} className="odd:bg-white even:bg-slate-50">
                         <td className="w-40 sm:w-56 p-3 sm:p-4 font-medium text-gray-700 align-middle border-b">
@@ -147,6 +150,29 @@ export default function PersonalInfoPage() {
                         </td>
                       </tr>
                     ))}
+
+                    {/* ✅ Nuevo campo select */}
+                    <tr className="odd:bg-white even:bg-slate-50">
+                      <td className="w-40 sm:w-56 p-3 sm:p-4 font-medium text-gray-700 align-middle border-b">
+                        <label htmlFor="roomType">Tipo de Habitación</label>
+                      </td>
+                      <td className="p-3 sm:p-4 border-b">
+                        <select
+                          id="roomType"
+                          name="roomType"
+                          value={form.roomType}
+                          onChange={handleChange}
+                          required
+                          className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 outline-none ring-offset-2 transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                        >
+                          <option value="">Selecciona un tipo</option>
+                          <option value="basic">Basic</option>
+                          <option value="luxury">Luxury</option>
+                          <option value="suite">Suite</option>
+                        </select>
+                      </td>
+                    </tr>
+
                     <tr>
                       <td colSpan={2} className="p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-indigo-50">
                         <button

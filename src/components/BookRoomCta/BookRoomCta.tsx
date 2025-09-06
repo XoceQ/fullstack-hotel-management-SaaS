@@ -21,8 +21,6 @@ type Props = {
   specialNote: string;
   isBooked: boolean;
   roomType: string;
-
-
   handleBookNowClick: () => void;
 };
 
@@ -48,6 +46,7 @@ const BookRoomCta: FC<Props> = (props) => {
     setNoOfChildren,
     noOfChildren,
     isBooked,
+    roomType,
     handleBookNowClick,
   } = props;
 
@@ -81,7 +80,7 @@ const BookRoomCta: FC<Props> = (props) => {
         discount,
         specialNote,
         roomType: props.roomType || "No especificado", // 👈 aseguramos
-        
+
       }));
 
       // Redirigir a la vista de datos personales

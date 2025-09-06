@@ -26,6 +26,7 @@ model Reserva {
   noOfChildren Int
   nights       Int
   totalCOP     Int
+  roomType      String?   // 👈 nuevo campo opcional (ej: "Executive Room")
   createdAt    DateTime @default(now())
 }
 

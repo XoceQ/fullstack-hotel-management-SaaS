@@ -12,6 +12,7 @@ import ThemeContext from "@/context/themeContext";
 
 
 type Reserva = {
+  roomType: string;
   id?: string;
   nombre: string;
   apellido: string;
@@ -33,8 +34,6 @@ const Dashboard = () => {
   const [isClient, setIsClient] = useState(false);
   const [showModal, setShowModal] = useState(false); // <-- Modal flag
   const { darkTheme } = useContext(ThemeContext);
-
-
 
   useEffect(() => {
     setIsClient(true);
@@ -74,7 +73,6 @@ const Dashboard = () => {
     loadReservas();
   }, [isClient, session]);
 
-
   // 🔄 Detecta cambios desde la página de edición
   useEffect(() => {
     const updatedReserva = localStorage.getItem("reservaCompleta");
@@ -87,9 +85,6 @@ const Dashboard = () => {
       localStorage.removeItem("reservaCompleta");
     }
   }, []);
-
-
-
   const formatCOP = (n: number) =>
     (n ?? 0).toLocaleString('es-CO', {
       style: 'currency',
@@ -160,6 +155,7 @@ const Dashboard = () => {
               <th>Documento</th>
               <th>Email</th>
               <th>Teléfono</th>
+              <th>Tipo de habitación</th> <!-- 👈 agregado -->
               <th>Check-in</th>
               <th>Check-out</th>
               <th>Adultos</th>
@@ -175,6 +171,7 @@ const Dashboard = () => {
                 <td>${reserva.documento}</td>
                 <td>${reserva.email}</td>
                 <td>${reserva.telefono}</td>
+                <td>${reserva.roomType || "No especificado"}</td> <!-- 👈 agregado -->
                 <td>${formatDateSimple(reserva.checkinDate)}</td>
                 <td>${formatDateSimple(reserva.checkoutDate)}</td>
                 <td>${reserva.adults}</td>
@@ -221,6 +218,7 @@ const Dashboard = () => {
       'Documento',
       'Email',
       'Teléfono',
+      'Tipo de habitación', // 👈 agregado
       'Check-in',
       'Check-out',
       'Adultos',
@@ -239,6 +237,7 @@ const Dashboard = () => {
         `"${reserva.documento}"`,
         `"${reserva.email}"`,
         `"${reserva.telefono}"`,
+        `"${reserva.roomType || "No especificado"}"`, // 👈 agregado
         `"${formatDateSimple(reserva.checkinDate)}"`,
         `"${formatDateSimple(reserva.checkoutDate)}"`,
         reserva.adults,
@@ -449,7 +448,6 @@ const Dashboard = () => {
             >
               Mi Dashboard
             </h1>
-
           </div>
           {reservas.length > 0 ? (
             <div className="space-y-4">
@@ -460,7 +458,6 @@ const Dashboard = () => {
                 >
                   📋 Todas las Reservas ({reservas.length})
                 </h3>
-
                 {/* Botones de exportación en versión móvil/tablet */}
                 <div className="flex gap-2 md:hidden">
                   <button
@@ -519,6 +516,7 @@ const Dashboard = () => {
                     <p><strong>Niños:</strong> {reserva.noOfChildren}</p>
                     <p><strong>Noches:</strong> {reserva.nights}</p>
                     <p><strong>Total:</strong> <span className="text-green-600 font-semibold">{formatCOP(reserva.totalCOP)}</span></p>
+                    <p><strong>Tipo de habitación:</strong> {reserva.roomType || "No especificado"}</p>
                   </div>
                 </div>
               ))}
@@ -538,5 +536,4 @@ const Dashboard = () => {
     </div>
   );
 };
-
 export default Dashboard;

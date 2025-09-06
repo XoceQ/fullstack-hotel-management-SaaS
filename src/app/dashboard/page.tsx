@@ -63,7 +63,6 @@ const AdminDashboard = () => {
           'X-Admin-Access': 'true' // Header especial para identificar acceso de admin
         }
       });
-      
       if (res.ok) {
         const data: Reserva[] = await res.json();
         setTodasLasReservas(data);
@@ -75,7 +74,6 @@ const AdminDashboard = () => {
     } catch (error) {
       console.warn('API no disponible, intentando con localStorage');
     }
-
     // Fallback: cargar desde localStorage si la API falla
     const local = localStorage.getItem('adminTodasReservas');
     if (local) {

@@ -63,7 +63,6 @@ const RoomDetails = (props: { params: { slug: string } }) => {
               <h2 className='font-bold text-left text-lg md:text-2xl'>
                 {room.name} ({room.dimension})
               </h2>
-
               <div className='flex my-11'>
                 {room.offeredAmenities.map((amenity: any) => (
                   <div
@@ -77,12 +76,10 @@ const RoomDetails = (props: { params: { slug: string } }) => {
                   </div>
                 ))}
               </div>
-
               <div className='mb-11'>
                 <h2 className='font-bold text-3xl mb-2'>Descripción</h2>
                 <p>{room.description}</p>
               </div>
-
               <div className='mb-11'>
                 <h2 className='font-bold text-3xl mb-2'>Servicios ofrecidos</h2>
                 <div className='grid grid-cols-2'>
@@ -96,7 +93,6 @@ const RoomDetails = (props: { params: { slug: string } }) => {
                   ))}
                 </div>
               </div>
-
               <div className='mb-11'>
                 <h2 className='font-bold text-3xl mb-2'>Seguridad e higiene</h2>
                 <div className='grid grid-cols-2'>
@@ -118,7 +114,6 @@ const RoomDetails = (props: { params: { slug: string } }) => {
                   </div>
                 </div>
               </div>
-
               {/* <div className='shadow dark:shadow-white rounded-lg p-6'>
                 <div className='items-center mb-4'>
                   <p className='md:text-lg font-semibold'>Opiniones de los clientes</p>
@@ -129,12 +124,13 @@ const RoomDetails = (props: { params: { slug: string } }) => {
               </div> */}
             </div>
           </div>
-
           <div className='md:col-span-4 rounded-xl shadow-lg dark:shadow dark:shadow-white sticky top-10 h-fit overflow-auto'>
             <BookRoomCta
               discount={room.discount}
               price={room.price} // Se asume que viene en COP
               specialNote={room.specialNote}
+              roomType={room.type}   // 👈 aquí se pasa el tipo de habitación
+
               checkinDate={checkinDate}
               setCheckinDate={setCheckinDate}
               checkoutDate={checkoutDate}

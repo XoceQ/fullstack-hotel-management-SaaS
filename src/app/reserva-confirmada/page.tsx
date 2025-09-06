@@ -10,7 +10,6 @@ export default function ReservaConfirmadaPage() {
     const data = localStorage.getItem("reservaCompleta");
     if (data) setReserva(JSON.parse(data));
   }, []);
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-white px-4">
       <div className="text-center space-y-6 max-w-xl bg-yellow-50 p-10 rounded-xl shadow-lg">
@@ -22,12 +21,14 @@ export default function ReservaConfirmadaPage() {
           <div className="text-left text-gray-800 mt-6 space-y-2">
             <p><strong>Nombre:</strong> {reserva.nombre} {reserva.apellido}</p>
             <p><strong>Documento:</strong> {reserva.documento}</p>
-              <p><strong>Teléfono:</strong> {reserva.telefono}</p>
+            <p><strong>Teléfono:</strong> {reserva.telefono}</p>
+            <p><strong>Tipo de habitación:</strong> {reserva.roomType || "No especificado"}</p>
             <p><strong>Check-in:</strong> {new Date(reserva.checkinDate).toLocaleString('es-CO', {
               timeZone: 'America/Bogota',
               dateStyle: 'medium',
               timeStyle: 'short',
-            })}</p>            <p><strong>Check-out:</strong> {new Date(reserva.checkoutDate).toLocaleDateString('es-CO')}</p>
+            })}</p>           
+            <p><strong>Check-out:</strong> {new Date(reserva.checkoutDate).toLocaleDateString('es-CO')}</p>
             <p><strong>Adultos:</strong> {reserva.adults}</p>
             <p><strong>Niños:</strong> {reserva.noOfChildren}</p>
             <p><strong>Noches:</strong> {reserva.nights}</p>
@@ -42,22 +43,22 @@ export default function ReservaConfirmadaPage() {
             </p>
           </div>
         )}
-       {/*  Botones ahora dentro del contenedor amarillo */}
+        {/*  Botones ahora dentro del contenedor amarillo */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
-         <a
-          href="https://wa.me/573153993202?text=Hola,%20quiero%20más%20información%20sobre%20el%20pago"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="px-6 py-3 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition"
-        >
-          Realizar Pago
-        </a>
-         <Link
+          <a
+            href="https://wa.me/573153993202?text=Hola,%20quiero%20más%20información%20sobre%20el%20pago"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-6 py-3 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition"
+          >
+            Realizar Pago
+          </a>
+          <Link
             href="/auth"
             className="px-6 py-3 bg-gray-200 text-gray-800 rounded-lg shadow hover:bg-gray-300 transition"
           >
-            Ir al Dashboard
-        </Link>
+            Ir al Panel
+          </Link>
         </div>
       </div>
     </div>

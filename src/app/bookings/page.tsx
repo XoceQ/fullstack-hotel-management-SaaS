@@ -26,6 +26,10 @@ export default function BookingList() {
           <div key={reserva._id} className="p-4 border rounded shadow-sm">
             <p><strong>Cliente:</strong> {reserva.user?.nombre} {reserva.user?.apellido}</p>
             <p><strong>Email:</strong> {reserva.user?.email}</p>
+            <p>
+              <strong>Tipo de habitación:</strong>{" "}
+              {reserva.hotelRoom?.type || "No especificado"}
+            </p>
             <p><strong>Check-in:</strong> {new Date(reserva.checkinDate).toLocaleDateString()}</p>
             <p><strong>Check-out:</strong> {new Date(reserva.checkoutDate).toLocaleDateString()}</p>
             <p><strong>Total:</strong> ${reserva.totalPrice}</p>

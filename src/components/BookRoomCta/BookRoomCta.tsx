@@ -6,6 +6,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { useRouter } from "next/navigation";
 
 type Props = {
+  [x: string]: any;
   checkinDate: Date | null;
   setCheckinDate: Dispatch<SetStateAction<Date | null>>;
   checkoutDate: Date | null;
@@ -19,6 +20,9 @@ type Props = {
   noOfChildren: number;
   specialNote: string;
   isBooked: boolean;
+  roomType: string;
+
+
   handleBookNowClick: () => void;
 };
 
@@ -75,7 +79,9 @@ const BookRoomCta: FC<Props> = (props) => {
         totalCOP,
         price,
         discount,
-        specialNote
+        specialNote,
+        roomType: props.roomType || "No especificado", // 👈 aseguramos
+        
       }));
 
       // Redirigir a la vista de datos personales
@@ -103,7 +109,7 @@ const BookRoomCta: FC<Props> = (props) => {
       <div className="flex">
         <div className="w-1/2 pr-2">
           <label htmlFor="check-in-date" className="text-gray-700 dark:text-gray-200">
-           Fecha Check In 
+            Fecha Check In
           </label>
           <DatePicker
             selected={checkinDate}
@@ -133,7 +139,7 @@ const BookRoomCta: FC<Props> = (props) => {
         </div>
         <div className="w-1/2 pl-2">
           <label htmlFor="check-out-date" className="text-gray-700 dark:text-gray-200">
-          Fecha  Check Out 
+            Fecha  Check Out
           </label>
           <DatePicker
             selected={checkoutDate}

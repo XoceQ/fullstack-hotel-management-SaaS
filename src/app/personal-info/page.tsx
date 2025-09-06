@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 export default function PersonalInfoPage() {
-  
+
   const router = useRouter();
   const [form, setForm] = useState({
     nombre: "",
@@ -39,7 +39,7 @@ export default function PersonalInfoPage() {
     e.preventDefault();
     if (!reserva) return;
 
-    const datosCompletos = { ...reserva, ...form, createdAt: reserva.createdAt || new Date().toISOString() };
+    const datosCompletos = { ...reserva, ...form, roomType: reserva.roomType,  createdAt: reserva.createdAt || new Date().toISOString() };
 
     try {
       const res = await fetch(`/api/reserva/${reserva.id || ""}`, {
@@ -63,7 +63,6 @@ export default function PersonalInfoPage() {
       alert("Error al conectar con el servidor");
     }
   };
-
   const formatCOP = (n: number) =>
     (n ?? 0).toLocaleString("es-CO", { style: "currency", currency: "COP" });
 
@@ -80,13 +79,13 @@ export default function PersonalInfoPage() {
               Verifica tu resumen y completa tus datos para confirmar
             </p>
           </div>
-
           <div className="px-4 sm:px-10 pb-10">
             {reserva ? (
               <div className="overflow-x-auto rounded-xl border border-gray-200 shadow-sm mb-6">
                 <table className="w-full text-sm">
                   <thead className="bg-gradient-to-r from-blue-50 to-indigo-50">
                     <tr className="text-gray-700">
+                      <th className="p-3 text-left font-semibold border-b">Habitación</th>
                       <th className="p-3 text-left font-semibold border-b">Check-in</th>
                       <th className="p-3 text-left font-semibold border-b">Check-out</th>
                       <th className="p-3 text-left font-semibold border-b">Adultos</th>
@@ -97,6 +96,9 @@ export default function PersonalInfoPage() {
                   </thead>
                   <tbody>
                     <tr className="odd:bg-white even:bg-slate-50">
+                      <td className="p-3 border-b">
+                        {reserva.roomType || "No especificado"}
+                      </td>
                       <td className="p-3 border-b">{new Date(reserva.checkinDate).toLocaleDateString()}</td>
                       <td className="p-3 border-b">{new Date(reserva.checkoutDate).toLocaleDateString()}</td>
                       <td className="p-3 border-b">{reserva.adults}</td>

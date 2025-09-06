@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 
 // ✅ GET reservas de un usuario
 export async function GET(req: NextRequest) {
-  
+
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.email) {
@@ -61,6 +61,8 @@ export async function POST(req: NextRequest) {
     noOfChildren,
     nights,
     totalCOP,
+    roomType,      // 👈 agrega aquí
+
   } = body;
 
   if (!nombre || !apellido || !documento || !telefono || !checkinDate || !nights) {
@@ -87,6 +89,7 @@ export async function POST(req: NextRequest) {
         noOfChildren,
         nights,
         totalCOP,
+        roomType      // 👈 guardar tipo de habitación
       },
     });
 

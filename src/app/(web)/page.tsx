@@ -7,8 +7,6 @@ import FeaturedRoom from "@/components/FeaturedRoom/FeaturedRoom";
 
 const Home = async () => {
     const featuredRoom = await getFeaturedRoom();
-    
-
     return (
         <>
             <HeroSection/>

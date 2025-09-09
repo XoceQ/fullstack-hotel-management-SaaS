@@ -24,8 +24,8 @@ export default defineConfig({
             S.documentTypeListItem("user").title("Usuarios"),
             S.documentTypeListItem("account").title("Cuentas"),
             S.documentTypeListItem("hotelRoom").title("Habitaciones de Hotel"),
-            S.documentTypeListItem("review").title("Reseñas"),
-
+/*             S.documentTypeListItem("review").title("Reseñas"),
+ */
             // ❌ Si no lo agregas aquí, queda oculto en la UI
           ]),
     }),

@@ -139,7 +139,6 @@ const Dashboard = () => {
       minute: '2-digit'
     })}</p>
         </div>
-        
         <div class="user-info">
           <h3>👤 Información del Usuario</h3>
           <p><strong>Nombre:</strong> ${session?.user?.name || 'N/A'}</p>
@@ -182,7 +181,6 @@ const Dashboard = () => {
             `).join('')}
           </tbody>
         </table>
-        
         <div class="footer">
           <p>Este reporte contiene información confidencial. Manténgalo seguro.</p>
         </div>
@@ -343,7 +341,6 @@ const Dashboard = () => {
           </div>
         </div>
       )}
-
       <div className="max-w-6xl mx-auto grid gap-8 md:grid-cols-12">
         {/* Sidebar */}
         <aside className="md:col-span-4 lg:col-span-3 bg-white shadow-lg rounded-xl p-6 text-center space-y-6 h-fit sticky top-10">
@@ -397,11 +394,9 @@ const Dashboard = () => {
               <p className="text-lg font-bold text-purple-600">{formatCOP(totalIngresos)}</p>
             </div>
           </div>
-
           {/* 📊 Botones de Exportación */}
           <div className="space-y-3">
             <h3 className="text-sm font-semibold text-gray-700 text-left">📊 Exportar Datos</h3>
-
             <button
               onClick={exportToPDF}
               disabled={reservas.length === 0}
@@ -414,7 +409,6 @@ const Dashboard = () => {
               <FaFilePdf className="text-lg" />
               Exportar PDF
             </button>
-
             <button
               onClick={exportToExcel}
               disabled={reservas.length === 0}
@@ -428,8 +422,6 @@ const Dashboard = () => {
               Exportar Excel
             </button>
           </div>
-
-
           <button
             onClick={() => signOut({ callbackUrl: '/' })}
             className="flex items-center justify-center gap-2 w-full bg-red-600 text-white py-3 px-6 rounded-lg font-semibold shadow hover:bg-red-700 transition"
@@ -438,7 +430,6 @@ const Dashboard = () => {
             Cerrar Sesión
           </button>
         </aside>
-
         {/* Main content */}
         <main className="md:col-span-8 lg:col-span-9 space-y-6">
           <div className="flex justify-between items-center">

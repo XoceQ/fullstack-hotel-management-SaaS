@@ -31,6 +31,25 @@ const formatCOP = (value: number) =>
     maximumFractionDigits: 0,
   }).format(value);
 
+// Función para obtener la hora actual en zona horaria de Colombia
+// Función corregida para obtener la hora actual en zona horaria de Colombia
+const getColombiaNow = () => {
+  const now = new Date();
+  
+  const formatter = new Intl.DateTimeFormat('sv-SE', {
+    timeZone: 'America/Bogota',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  });
+  
+  const colombiaTime = formatter.format(now);
+  return `${colombiaTime}.000Z`;
+};
+
 const BookRoomCta: FC<Props> = (props) => {
   const {
     price,
@@ -80,9 +99,8 @@ const BookRoomCta: FC<Props> = (props) => {
         discount,
         specialNote,
         roomType: props.roomType || "No especificado", // 👈 aseguramos
-
+        createdAt: getColombiaNow(), // 👈 Hora sincronizada con Colombia
       }));
-
       // Redirigir a la vista de datos personales
       window.open('/personal-info', '_blank');
     }

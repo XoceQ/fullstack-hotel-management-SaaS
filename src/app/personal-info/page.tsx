@@ -3,6 +3,24 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
+// Función para obtener la hora actual en zona horaria de Colombia
+// Función corregida para obtener la hora actual en zona horaria de Colombia
+const getColombiaNow = () => {
+  const now = new Date();
+
+  const formatter = new Intl.DateTimeFormat('sv-SE', {
+    timeZone: 'America/Bogota',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  });
+
+  const colombiaTime = formatter.format(now);
+  return `${colombiaTime}.000Z`;
+};
 export default function PersonalInfoPage() {
 
   const router = useRouter();
@@ -42,7 +60,12 @@ export default function PersonalInfoPage() {
     e.preventDefault();
     if (!reserva) return;
 
-    const datosCompletos = { ...reserva, ...form, roomType: form.roomType || reserva.roomType, createdAt: reserva.createdAt || new Date().toISOString() };
+    const datosCompletos = {
+      ...reserva,
+      ...form,
+      roomType: form.roomType || reserva.roomType,
+      createdAt: reserva.createdAt || getColombiaNow(), // ✅ asegura valor real
+    };
 
     try {
       const res = await fetch(`/api/reserva/${reserva.id || ""}`, {
@@ -129,8 +152,8 @@ export default function PersonalInfoPage() {
                       { label: "Apellido", name: "apellido", type: "text" },
                       { label: "Documento", name: "documento", type: "text" },
                       { label: "Teléfono", name: "telefono", type: "tel" },
-/*                       { label: "Tipo de Habitación", name: "roomType", type: "text" }, // ✅ nuevo campo
- */
+                      /* { label: "Tipo de Habitación", name: "roomType", type: "text" }, // ✅ nuevo campo
+                       */
                     ].map((field) => (
                       <tr key={field.name} className="odd:bg-white even:bg-slate-50">
                         <td className="w-40 sm:w-56 p-3 sm:p-4 font-medium text-gray-700 align-middle border-b">
@@ -150,9 +173,8 @@ export default function PersonalInfoPage() {
                         </td>
                       </tr>
                     ))}
-
                     {/* ✅ Nuevo campo select */}
-                    <tr className="odd:bg-white even:bg-slate-50">
+                    {/*  <tr className="odd:bg-white even:bg-slate-50">
                       <td className="w-40 sm:w-56 p-3 sm:p-4 font-medium text-gray-700 align-middle border-b">
                         <label htmlFor="roomType">Tipo de Habitación</label>
                       </td>
@@ -171,8 +193,7 @@ export default function PersonalInfoPage() {
                           <option value="suite">Suite</option>
                         </select>
                       </td>
-                    </tr>
-
+                    </tr> */}
                     <tr>
                       <td colSpan={2} className="p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-indigo-50">
                         <button

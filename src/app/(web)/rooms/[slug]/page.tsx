@@ -130,7 +130,6 @@ const RoomDetails = (props: { params: { slug: string } }) => {
               price={room.price} // Se asume que viene en COP
               specialNote={room.specialNote}
               roomType={room.type}   // 👈 aquí se pasa el tipo de habitación
-
               checkinDate={checkinDate}
               setCheckinDate={setCheckinDate}
               checkoutDate={checkoutDate}
